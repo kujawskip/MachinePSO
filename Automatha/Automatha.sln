@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automatha", "Automatha\Automatha.csproj", "{234EE152-5ADE-4DB2-BDAC-A8CFC70951FA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanguageProcessor", "LanguageProcessor\LanguageProcessor.csproj", "{242ECFD2-70CF-4EB5-9365-1580E9C9DAD2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSO", "PSO\PSO.csproj", "{CDE9244A-6D07-41EA-89AF-D8CC1D98A12C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{234EE152-5ADE-4DB2-BDAC-A8CFC70951FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{234EE152-5ADE-4DB2-BDAC-A8CFC70951FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{234EE152-5ADE-4DB2-BDAC-A8CFC70951FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{234EE152-5ADE-4DB2-BDAC-A8CFC70951FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{242ECFD2-70CF-4EB5-9365-1580E9C9DAD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{242ECFD2-70CF-4EB5-9365-1580E9C9DAD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{242ECFD2-70CF-4EB5-9365-1580E9C9DAD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{242ECFD2-70CF-4EB5-9365-1580E9C9DAD2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDE9244A-6D07-41EA-89AF-D8CC1D98A12C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDE9244A-6D07-41EA-89AF-D8CC1D98A12C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDE9244A-6D07-41EA-89AF-D8CC1D98A12C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDE9244A-6D07-41EA-89AF-D8CC1D98A12C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
