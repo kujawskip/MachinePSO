@@ -1,0 +1,8 @@
+C:\Users\Patryk\CharSheet\Automatha\Automatha\bin\Debug\Automatha.exe.config
+C:\Users\Patryk\CharSheet\Automatha\Automatha\bin\Debug\Automatha.exe
+C:\Users\Patryk\CharSheet\Automatha\Automatha\bin\Debug\Automatha.pdb
+C:\Users\Patryk\CharSheet\Automatha\Automatha\obj\Debug\Automatha.csprojResolveAssemblyReference.cache
+C:\Users\Patryk\CharSheet\Automatha\Automatha\obj\Debug\Automatha.Properties.Resources.resources
+C:\Users\Patryk\CharSheet\Automatha\Automatha\obj\Debug\Automatha.csproj.GenerateResource.Cache
+C:\Users\Patryk\CharSheet\Automatha\Automatha\obj\Debug\Automatha.exe
+C:\Users\Patryk\CharSheet\Automatha\Automatha\obj\Debug\Automatha.pdb
