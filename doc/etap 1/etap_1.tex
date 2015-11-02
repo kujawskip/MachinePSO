@@ -1,0 +1,161 @@
+\documentclass{../llncs_template/llncs} 
+\pagestyle{plain}
+\usepackage[utf8]{inputenc}
+\usepackage{polski}
+\usepackage[polish]{babel}
+\usepackage{makeidx}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+%\usepackage{hyperref} % powoduje buga w LLNCS i nie możemy go użyć :(
+\begin{document}
+
+\title{Teoria algorytmów i obliczeń -- Projekt -- Etap 1}
+\author{Błażej Bobko, Jakub Gocławski, Patryk Kujawski, Radosław Kutkowski}
+\institute{Wydział Matematyki i Nauk Informacyjnych, Politechnika Warszawska}
+\maketitle 
+
+\section{Opis zadania}
+
+Zadanie polega na znalezieniu deterministycznego automatu skończonego, będącego rekonstrukcją struktury automatu na podstawie relacji indukowanej przez język. Na wejściu otrzymujemy automat, który pozwala sprawdzić czy: $\forall _{x,y \in \Sigma^*}\ x R_L y$ i na podstawie odpowiedzi otrzymanych przez powyższą funkcję tworzymy automat wynikowy. Automat ten próbujemy znaleźć za pomocą kolejnych optymalizacji za pomocą algorytmu PSO.
+
+\section{Struktury danych}
+\label{sec:data_struct}
+Rozdział ten opisuje najważniejsze struktury danych potrzebne do rozwiązania zadania. Przedstawione są kluczowe atrybuty klas, z pominięciem atrybutów prywatnych i tymczasowych.
+
+\subsection*{Automaton}
+Automat reprezentujemy jako klasę posiadającą następujące atrybuty:
+\begin{itemize}
+\item $LettersCount$ -- liczba liter w alfabecie, litery numerujemy od 0 do $LettersCount$ - 1,
+\item $StatesCount$ -- liczba stanów automatu, stany numerujemy od 0 do $StatesCount$ - 1,
+\item $CurrentState$ -- indeks stanu, w którym aktualnie znajduje się automat,
+\item $Transistions$ -- tablica opisująca funkcję przejścia; jest to tablica dwuwymiarowa, rozmiaru ($StatesCount$\ *\ $LettersCount$) o wartosciach $[0\ ..\ StatesCount - 1$].
+\end{itemize}
+Przy tak zdefiniowanej strukturze danych, obliczenie automatu dla litery $Letter$ wyraża się następująco:
+\[
+  CurrentState = Transistions[CurrentState][Letter]
+\]
+
+\subsection*{Particle}
+\begin{itemize}
+\item $Position$ -- aktualny stan cząsteczki, na podstawie którego zbudować można funkcje przejścia dla automatu; tablica rozmiaru  ($StatesCount$\ *\ $LettersCount$) o wartościach typu zmiennopozycyjnego z zakresu $[0.0\ ..\ StatesCount - 1$],
+\item $Error$ -- wartość błędu dla aktualnej pozycji $Position$,
+\item $BestError$ -- najlepszy ,,lokalny'' błąd uzyskany dotychczas przez te cząsteczkę,
+\item $BestPosition$ -- najlepszy ,,lokalny'' stan cząsteczki, tablica zdefiniowana tak samo jak $Position$,
+\item $Velocity$ -- aktualna prędkość cząsteczki; tablica rozmiaru ($StatesCount$\ *\ $LettersCount$) o wartościach typu zmiennopozycyjnego z zakresu $[-(StatesCount - 1)\ ..\ StatesCount - 1$].
+\end{itemize}
+
+\subsection*{PSO}
+Klasa realizująca optymalizację za pomocą algorytmu PSO. Atrybuty:
+\begin{itemize}
+\item $ParticleCount$ -- liczba cząsteczek w roju,
+\item $Swarm$ -- tablica rozmiaru $ParticleCount$ z wartościami typu $Particle$,
+\item $BestGlobalPosition$ -- najlepszy ,,globalny'' stan spośród wszystkich cząsteczek; tablica  zdefiniowana tak samo jak $Particle.Position$,
+\item $BestGlobalError$ -- najlepszy (najniższy) ,,globalny'' błąd spośród wszystkich cząsteczek.
+\end{itemize}
+Dodatkowe parametry określające charakterystykę działania optymalizacji (np. parametr $maxEpochs$) przekazywane są bezpośrednio do funkcji uruchamiającej obliczenia PSO.
+
+\subsection*{DataSet}
+\begin{itemize}
+\item $Word1$ -- pierwsze słowo (lista liter),
+\item $Word2$ -- drugie słowo (lista liter),
+\item $AreRelated$ -- wartość boolowska określająca, czy $Word1$ oraz $Word2$ są ze sobą w relacji.
+\end{itemize}
+
+\section{PSO - Particle Swarm Optimization}
+
+PSO (\emph{Particle Swarm Optimization}) jest metodą obliczeniową polegającą na iteracyjnych próbach ulepszenia rozwiązania problemu optymalizacji poprzez przeszukiwanie przestrzeni rozwiązań w wielu różnych punktach jednocześnie. Potencjalne rozwiązania, nazwane dalej cząsteczkami, są porównywane za pomocą pewnej funkcji dopasowania a następnie “przesuwają się” w przestrzeni rozwiązań. Nowa pozycja jest dobierana na podstawie kilku czynników m.in. najlepszego znanego globalnie rozwiązania oraz najlepszego rozwiązania unikalnego dla danej cząstki. Dokładny algorytm wygląda następująco:
+
+\subsection*{Dane wejściowe}
+\begin{itemize}
+\item $N$ -- ilość cząsteczek
+\item $Dim$ -- wymiar przestrzeni przeszukiwania
+\item $LowerBound$ -- wektor długości Dim zawierający w i-tej komórce największą wartość współrzędnej możliwą w i-tym wymiarze przestrzeni rozwiązań
+\item $UpperBound$ -- wektor długości Dim zawierający w i-tej komórce największą wartość współrzędnej możliwą w i-tym wymiarze w przestrzeni rozwiązań
+\item $MaxEpochs$ -- Liczba iteracji po których zwracamy najlepsze znalezione rozwiązanie
+\item $VelocityWeight$ -- Waga jaką cząsteczka przywiązuje dla swojej aktualnej prędkości
+\item $CognitiveWeight$ -- Waga jaką cząsteczka przywiązuje do najlepszego rozwiązania jakie napotkała
+\item $SocialWeight$ -- Waga jaką cząsteczka przywiązuje do najlepszego rozwiązania jakie znaleziono w toku działania PSO
+\item $Fitness$ -- Funkcja $R^{Dim} \rightarrow R$, zwracająca dla danego rozwiązania pewną wielkość opisującą to jak bardzo bliskie optymalnemu jest to rozwiązanie. Wartość tej funkcji chcemy minimalizować/maksymalizować. 
+\end{itemize}
+
+%Sposób działania PSO przedstawiony jest za pomocą \hyperref[alg:pso]{Algorytmu~\ref*{alg:pso}} na stronie \pageref{alg:pso}.
+Sposób działania PSO przedstawiony jest za pomocą Algorytmu~\ref{alg:pso} na stronie \pageref{alg:pso}.
+
+\begin{algorithm}
+\floatname{algorithm}{Algorytm}
+\begin{algorithmic}[1]
+\Procedure{PSO}{}
+    \State $BestSocialValue \gets \infty$
+    \State stwórz $N$ cząsteczek
+    \For{ $i := 0$ to $N$ }
+        \State stwórz wektor $Location$, w taki sposób, że
+        \For{$j := 0$ to $Dim$}
+            \State $Location_i(j) \gets Random(LowerBound(j), UpperBound(j))$
+        \EndFor
+        \State $BestCognitive_i \gets Location_i$
+        \State $BestCognitiveValue_i \gets Fitness(Location_i)$
+        \If{$BestCognitiveValue_i < BestSocialValue$}
+            \State $BestSocialValue \gets BestCognitiveValue_i$
+            \State $BestSocial  \gets BestCognitive_i$
+        \EndIf
+        \State ustal wektor $Velocity_i$ w losowy sposób, tak, że
+        \For{$j := 0$ to $Dim$}
+            \State $size \gets |UpperBound(j) - LowerBound(j)|$
+            \State $Velocity_i(j) \gets Random(-size, size)$
+        \EndFor
+    \EndFor
+    \For{ $k := 0$ to $MaxEpochs$ }
+        \For{ $i := 0$ to $N$ }
+            \For{ $j := 0$ to $Dim$ }
+                \State $RandomSocial = Random(0, 1)$
+                \State $RandomCognitive = Random(0, 1)$
+                \State $Velocity_i(j) \gets VelocityWeight * Velocity_i(j) + SocialWeight * RandomSocial * (BestSocial(j) - Location_i(j)) + CognitiveWeight * RandomCognitive * (BestCognitive_i(j) - Location_i(j))$
+                \State $Location_i(j) \gets Location_i(j) + Velocity_i(j)$
+            \EndFor
+            \State $fitness \gets$ oblicz wartoć $Fitness(Location_i)$
+            \If{$ fitness < BestCognitiveValue_i $}
+                \State $BestCognitive_i \gets Location_i$
+                \State $BestCognitiveValue_i \gets fitness$
+                \If{$ BestCognitiveValue_i < BestSocialValue $}
+                    \State $BestSocial \gets BestCognitive_i$
+                    \State $BestSocialValue \gets BestCognitiveValue_i$
+                \EndIf
+            \EndIf
+        \EndFor
+    \EndFor
+    \State \Return{$BestSocial$}
+\EndProcedure
+\end{algorithmic}
+\caption{PSO}\label{alg:pso}
+\end{algorithm}
+
+\section{Zbiór treningowy i testowy}
+
+Utworzenie zbiorów treningowego i testowego nastąpi poprzez wygenerowanie odpowiednio dużych zbiorów słów. Zbiór treningowy zawierać będzie wszystkie pary słów krótkich (długości 5) nad danym alfabetem i losowe pary słów długich. Słowa długie zostaną wygenerowane w sposób losowy oraz poprzez (wielokrotną) konkatenację słów krótkich, a następnie w sposób losowy dobrane w pary. Zbiór testowy będzie zawierał wszystkie wygenerowane pary słów długich, które nie weszły w skład zbioru testowego. Zbiory treningowe i testowe zostaną wygenerowane raz i zapisane w plikach tekstowych.
+
+\newpage
+\section{Opis rozwiązania}
+
+\subsection*{Dane wejściowe}
+\begin{itemize}
+\item $A$ -- automat wejściowy, podlegający rekonstrukcji
+\item $M$ -- liczba stanów automatu
+\item $Al$ -- wielkość alfabetu
+\item $MaxEpochs$ -- liczba iteracji od ostatniego zaktualizowania najlepszego kandydata po których kończymy działanie algorytmu
+\item $MaxState$ -- maksymalna liczba stanów jaką chcemy rozpatrzyć
+\item $LastBestCount$ -- liczba cząsteczek stworzonych na podstawie najlepszego rozwiązania z poprzedniej iteracji (dla $LastBestCount = 0$ rozwiązania poprzedniej iteracji nie będą brane pod uwagę w inicjalizowaniu PSO w iteracji następnej)
+\item $DeathProbablility$ -- szansa na zniszczenie cząsteczki i zastąpienie jej inną, losową (dla $DeathProbability = 0$ funkcjonalność umierania cząsteczek jest wyłączona)
+\item $P$ -- zbiór parametrów wywołania PSO
+\end{itemize}
+
+\subsection*{Działanie}
+
+Dla każdej pary słów w zbiorze par treningowych wywoływane jest działanie automatu A. Wyniki zapisywane są w słowniku, gdzie kluczem jest para sprawdzanych słów, a wartością wyniki obliczeń automatu A. Słownik ten posłuży do sprawdzania współczynników błędu automatów konstruowanych w toku działania algorytmu PSO.
+
+Wywołujemy PSO dla każdego całkowitego $i$ z przedziału $[2, MaxState]$ oraz ilości cząstek równej $P.N + LastBestCount$ . Zmienna $i$ określa ilość stanów jaką ma mieć automat wynikowy. Aby uprościć działanie funkcji $Fitness$ współrzędne cząstek zapisujemy w postaci macierzy $M * Al$ liczb zmiennopozycyjnych zamiast wektora o długości $M*Al$. Funkcja ta dla danej macierzy $m$ zaokrągla wszystkie wartości w komórkach tej macierzy w dół do liczby całkowitej i konstruuje automat skończony opisany w sekcji~\ref{sec:data_struct} (,,Struktury danych''). Następnie dla każdej pary słów w zbiorze treningowych par sprawdzane jest czy oba słowa kończą działanie automatu w tym samym stanie. Następnie na podstawie wyników przetwarzania wstępnego sprawdzamy, czy wynik ten jest błędem. Zwracana jest liczba napotkanych błędów. W każdej iteracji prócz pierwszej do zbioru losowych cząstek dodawane są cząstki konstruowane na podstawie wyniku poprzedniej iteracji. Są to macierze z dodatkowym wierszem odpowiadającym nieosiągalnemu przez automat stanowi, wiersz ten wypełniany jest losowo, tak samo początkowy wektor prędkości cząsteczki również jest losowy. W każdym kroku algorytmu PSO każda cząsteczka ma szansę ,,zginąć'', w takim wypadku nadawany jej jest losową prędkość i losowa pozycja w przestrzeni rozwiązań.
+
+Prawdopodobieństwo to opisane jest zmienną $DeathProbability$. Rozwiązanie to ma na celu minimalizację wpływu minimów lokalnych na proces przeszukiwania przestrzeni.
+
+Zmianie uległy również warunki zakończenia działania instancji PSO. PSO zwraca najlepszą wartość nie po danej ilości kroków, a po $MaxEpochs$ kroków od ostatniego zaktualizowania najlepszego kandydata na rozwiązanie. Nie spowoduje to nieskończonych obliczeń przy asymptotycznej zbieżności kolejnych kandydatów do optymalnego rozwiązania ze względu na to, że funkcja Fitness przyjmuje wartości naturalne.
+
+\end{document}
