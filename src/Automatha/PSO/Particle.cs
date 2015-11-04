@@ -15,7 +15,8 @@ namespace PSO
         private static int LastChange;
         private static int MaxChange;
         private static Random random;
-        public static void Initialise(int maxSteps)
+
+        public static void Initialize(int maxSteps)
         {
             MaxChange = maxSteps;
             LastChange = 0;
@@ -27,12 +28,12 @@ namespace PSO
         {
             LocalError = int.MaxValue;
             Core = core;
-            velocity = new double[core.States,core.alphabet.Letters.Length];
-            for (int i = 0; i < core.States; i++)
+            velocity = new double[core.StateCount,core.alphabet.Letters.Length];
+            for (int i = 0; i < core.StateCount; i++)
             {
                 for (int j = 0; j < core.alphabet.Letters.Length; j++)
                 {
-                    velocity[i, j] = random.NextDouble()*(core.States - 1);
+                    velocity[i, j] = random.NextDouble()*(core.StateCount - 1);
                 }
             }
             int Error = MachinePSO.Words.Sum(WordPair => Core.AreWordsInRelation(WordPair.Item1, WordPair.Item2) == MachinePSO.AreWordsInRelation(WordPair.Item1, WordPair.Item2) ? 0 : 1);
@@ -48,6 +49,7 @@ namespace PSO
                 GlobalMax = Max;
             }
         }
+
         public static bool StartSteps()
         {
             return LastChange != MaxChange;
@@ -56,18 +58,18 @@ namespace PSO
         public void Step()
         {
             
-            for (int i = 0; i < Core.States; i++)
+            for (int i = 0; i < Core.StateCount; i++)
             {
                 for (int j = 0; j < Core.alphabet.Letters.Length; j++)
                 {
-                    velocity[i, j] = MachinePSO.Omega*velocity[i, j] +
-                                     MachinePSO.OmegaLocal*random.NextDouble()*(Max[i, j] - Core.stateFunction[i, j])
+                    velocity[i, j] = MachinePSO.Omega * velocity[i, j] +
+                                     MachinePSO.OmegaLocal * random.NextDouble() * (Max[i, j] - Core.stateFunction[i, j])
                                      +
-                                     MachinePSO.OmegaGlobal*random.NextDouble()*
+                                     MachinePSO.OmegaGlobal * random.NextDouble() *
                                      (GlobalMax[i, j] - Core.stateFunction[i, j]);
                     Core.stateFunction[i, j] += velocity[i, j];
                     if (Core.stateFunction[i, j] < 0) Core.stateFunction[i, j] = 0;
-                    if (Core.stateFunction[i, j] > Core.States-1) Core.stateFunction[i, j] = (double) (Core.States-1);
+                    if (Core.stateFunction[i, j] > Core.StateCount-1) Core.stateFunction[i, j] = (double) (Core.StateCount-1);
                 }
 
             }
@@ -89,6 +91,7 @@ namespace PSO
         {
             LastChange++;
         }
+
         public Machine Core;
         public double[,] velocity;
         public double[,] Max;

@@ -13,7 +13,7 @@ namespace PSO
         public static List<Tuple<List<int>, List<int>>> Words;
         private static LanguageRelation relation;
         public static readonly double Omega, OmegaLocal, OmegaGlobal;
-        public static void Initialise(List<Tuple<List<int>, List<int>>> words,LanguageRelation relation)
+        public static void Initialize(List<Tuple<List<int>, List<int>>> words, LanguageRelation relation)
         {
             Words = words;
             MachinePSO.relation = relation;

@@ -8,64 +8,94 @@ namespace LanguageProcessor
 {
     public class Machine
     {
-        public double[,] stateFunction;
-        public readonly int States;
+        public double[,] stateFunction; //private?
+        public int StateCount
+        {
+            get
+            {
+                return stateFunction.GetLength(0);
+            }
+        }
+        public int LetterCount
+        {
+            get { return stateFunction.GetLength(1); }
+        }
 
-        public Alphabet alphabet;
+        public Alphabet alphabet; //private?
 
         public int GetFinishedState(string s)
         {
             return GetFinishedState(alphabet.Translate(s));
         }
 
-        public int GetFinishedState(List<int> Word)
+        public int GetFinishedState(List<int> word)
         {
             int state = 0;
-            foreach (var L in Word)
+            foreach (var symbol in word)
             {
-                double c = stateFunction[state, L];
+                double c = stateFunction[state, symbol];
                 c = Math.Round(c);
                 state = (int)c;
             }
             return state;
         }
 
-        private Machine(Alphabet A, double[,] SF, int states)
+        private Machine(Alphabet A, double[,] SF)
         {
             alphabet = A;
             stateFunction = SF;
-            States = states;
         }
-        public static Machine RandomMachineFactory(int states, Alphabet A)
+
+        public static Machine GenerateRandomMachine(int states, Alphabet alphabet)
         {
-            double[,] SF = new double[states, A.Letters.Length];
+            double[,] SF = new double[states, alphabet.Letters.Length];
             Random R = new Random();
             for (int i = 0; i < states; i++)
             {
-                for (int j = 0; j < A.Letters.Length; j++)
+                for (int j = 0; j < alphabet.Letters.Length; j++)
                 {
-                    SF[i,j] =(double) R.Next(states);
+                    SF[i, j] = R.Next(states);
                 }
             }
-            return new Machine(A,SF,states);
+            return new Machine(alphabet, SF);
         }
 
-        public List<Machine> GetMachinesWithMoreStates(int number)
+        public List<Machine> GetMachinesWithMoreStates(int machineCount, int statesToAdd = 1)
         {
+            if (machineCount < 0 || statesToAdd < 1) throw new ArgumentException();
+            //List<Machine> result = new List<Machine>();
+            //for (int i = 0; i < machineCount; i++) result.Add(GenerateRandomMachine(States + statesToAdd, alphabet));
+            //foreach (var M in result)
+            //{
+            //    for (int i = 0; i < States; i++)
+            //    {
+            //        for (int j = 0; j < alphabet.Letters.Length; j++)
+            //        {
+            //            M.stateFunction[i, j] = stateFunction[i, j];
+            //        }
+            //    }
+            //}
+            //return result;
+            var rand = new Random();
             List<Machine> result = new List<Machine>();
-            for(int i=0;i<number;i++) result.Add(RandomMachineFactory(States+1,alphabet));
-            foreach (var M in result)
+            for(int i=0; i<machineCount; i++)
             {
-                for (int i = 0; i < States; i++)
+                var SF = new double[StateCount + statesToAdd, LetterCount];
+                for (int stateIndex = 0; stateIndex < SF.GetLength(0); stateIndex++)
                 {
-                    for (int j = 0; j < alphabet.Letters.Length; j++)
+                    for (int letterIndex = 0; letterIndex < SF.GetLength(1); stateIndex++)
                     {
-                        M.stateFunction[i, j] = stateFunction[i, j];
+                        SF[stateIndex, letterIndex] =
+                            stateIndex >= StateCount ?
+                            rand.Next(StateCount + statesToAdd) :
+                            stateFunction[stateIndex, letterIndex];
                     }
                 }
+                result.Add(new Machine(alphabet, SF));
             }
             return result;
         }
+
         public bool AreWordsInRelation(List<int> Word1, List<int> Word2)
         {
             return GetFinishedState(Word1) == GetFinishedState(Word2);
@@ -78,8 +108,10 @@ namespace LanguageProcessor
 
         public double[,] GetFunctionCopy()
         {
-            double[,] D = new double[States,alphabet.Letters.Length];
-            for(int i=0;i<States;i++) for (int j = 0; j < alphabet.Letters.Length; j++) D[i, j] = stateFunction[i, j];
+            double[,] D = new double[StateCount, LetterCount];
+            for (int i = 0; i < StateCount; i++)
+                for (int j = 0; j < LetterCount; j++)
+                    D[i, j] = stateFunction[i, j];
             return D;
         }
     }

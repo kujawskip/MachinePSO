@@ -18,7 +18,7 @@ namespace LanguageProcessor
 
         private int Translate(char c)
         {
-            for(int i=0;i<letters.Length;i++) if (letters[i] == c) return i;
+            for (int i = 0; i < letters.Length; i++) if (letters[i] == c) return i;
             return -1;
         }
         public string Translate(List<int> L)
