@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LanguageProcessor;
+using TestGenerator;
 
 namespace UserInterface
 {
@@ -26,6 +27,7 @@ namespace UserInterface
         private int ParticleCount;
         private double VelocityWeight, CognitiveWeight, GlobalWeight;
         private Machine Automaton;
+        private TestSets Set;
         public bool InputLoaded
         {
             get { return _inputLoaded; }
@@ -56,22 +58,30 @@ namespace UserInterface
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            ParamethersValidated = ValidateParamethers();
+            string errbuf;
+            ParamethersValidated = ValidateParamethers(out errbuf);
+            if (!ParamethersValidated)
+            {
+                MessageBox.Show("Błąd poczas walidowania parametrów " + errbuf, "Error");
+            }
         }
 
-        private bool ValidateParamethers()
+        private bool ValidateParamethers(out string errbuf)
         {
             int N;
             double Weight1, Weight2, Weight3;
             bool flag = int.TryParse(ParticleCountTextBox.Text, out N);
-            if (!flag) return false;
+            errbuf = "";
+            if (!flag) errbuf += " Liczba cząsteczek";
 
-            flag = double.TryParse(VelocityTextBox.Text, out Weight1);
-            if (!flag) return false;
-            flag = double.TryParse(LocalTextBox.Text, out Weight2);
-            if (!flag) return false;
-            flag = double.TryParse(GlobalTextBox.Text, out Weight3);
-            if (!flag) return false;
+            bool flag1 = double.TryParse(VelocityTextBox.Text, out Weight1);
+            if (!flag1) errbuf += " Waga Prędkości";
+
+           bool flag2 = double.TryParse(LocalTextBox.Text, out Weight2);
+            if (!flag2) errbuf += " Lokalna Waga";
+          bool  flag3 = double.TryParse(GlobalTextBox.Text, out Weight3);
+            if (!flag3) errbuf += " Globalna Waga";
+            if (!(flag1 && flag2 && flag3 && flag)) return false;
             ParticleCount = N;
             VelocityWeight = Weight1;
             CognitiveWeight = Weight2;
@@ -96,7 +106,14 @@ namespace UserInterface
 
         private bool CreateTests()
         {
-            throw new NotImplementedException();
+            var D = new TestRunner(Automaton);
+            var b = D.ShowDialog();
+            if (b.HasValue && b.Value)
+            {
+                Set = D.Set;
+                return true;
+            }
+            return false;
         }
 
         private void Button_Click_3(object sender, RoutedEventArgs e)

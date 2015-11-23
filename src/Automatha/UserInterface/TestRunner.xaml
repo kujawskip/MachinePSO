@@ -1,0 +1,69 @@
+﻿<Window x:Class="UserInterface.TestRunner"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="TestRunner" Height="300" Width="300">
+    <Window.Resources>
+        <Style x:Key="TextBoxStyle" TargetType="TextBox" >
+            <EventSetter Event="LostKeyboardFocus" Handler="TextBoxHandler"></EventSetter>
+            <EventSetter Event="TextChanged" Handler="TextBoxHandler"></EventSetter>
+        </Style>
+
+
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="6">
+            <TextBlock>Losowe Testy:</TextBlock>
+            <TextBox Name="RandomTestTextBox" Style="{StaticResource TextBoxStyle}">50</TextBox>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="9" Grid.ColumnSpan="6">
+            <TextBlock>Dokładne próby</TextBlock>
+            <TextBox Name="ThoroughTestTextBox" Style="{StaticResource TextBoxStyle}">5</TextBox>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="6">
+            <TextBlock>Grupa Kontrolna</TextBlock>
+            <TextBox Name="ControlTestBox" Style="{StaticResource TextBoxStyle}">1</TextBox>
+        </StackPanel>
+        <Button Grid.Row ="9" Grid.Column="2" Grid.RowSpan="1" Grid.ColumnSpan="6" Click="Button_Click">Zatwierdz Parametry</Button>
+        <Button Grid.Row ="9" Grid.Column="10" Grid.RowSpan="1" Grid.ColumnSpan="6" Click="Button_Click_1">Wczytaj testy</Button>
+        <Button Grid.Row ="11" Grid.Column="10" Grid.RowSpan="1" Grid.ColumnSpan="6" IsEnabled="{Binding TestsReady}" Height="20" VerticalAlignment="Top" Click="Button_Click_2" >Zapisz testy</Button>
+        <Button Grid.Row ="11" Grid.Column="2" Grid.RowSpan="1" Grid.ColumnSpan="6" Click="Button_Click_3" Height="17" VerticalAlignment="Top" >Generuj Testy</Button>
+        <Button Grid.Row ="13" Grid.Column="6" Grid.ColumnSpan="6" IsEnabled="{Binding TestsReady}" Click="Button_Click_4">Akceptuj</Button>
+
+    </Grid>
+</Window>

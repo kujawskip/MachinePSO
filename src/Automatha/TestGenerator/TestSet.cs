@@ -14,6 +14,18 @@ namespace TestGenerator
             return new Tuple<T1, T2>(t.Item2, t.Item1);
         }
 
+        public static bool LoadSetFromFile(string path,Machine Automaton,out TestSets sets)
+        {
+            //warto obsluzyc sytuacje gdzie TestSet z pliku ma nie rowna dlugosc alfabetu do zaladowanego automatu - nie wiem czy to tu czy w UI
+            throw new NotImplementedException();
+            // Wyjatki zwiazane z odczytem/zapisem do pliku - obslugujemy tu i zwracamy false.
+        }
+
+        public bool SaveSetToFile(string path)
+        {
+            throw new NotImplementedException();
+            // Wyjatki zwiazane z odczytem/zapisem do pliku - obslugujemy tu i zwracamy false.
+        }
         private static string SeparatedArray<T>(T[] array, char separator)
         {
             if (array == null) return null;
