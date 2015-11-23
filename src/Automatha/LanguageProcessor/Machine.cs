@@ -96,6 +96,11 @@ namespace LanguageProcessor
             return result;
         }
 
+        public bool AreWordsInRelation(int[] Word1, int[] Word2)
+        {
+            return AreWordsInRelation(Word1.ToList(), Word2.ToList());
+        }
+
         public bool AreWordsInRelation(List<int> Word1, List<int> Word2)
         {
             return GetFinishedState(Word1) == GetFinishedState(Word2);
