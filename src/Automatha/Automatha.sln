@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSO", "PSO\PSO.csproj", "{C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserInterface", "UserInterface\UserInterface.csproj", "{C7F5EF53-D768-4CB8-BAE9-46C5730B795E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestGenerator", "TestGenerator\TestGenerator.csproj", "{494733B6-BBAF-4108-B2B1-A59B26158A98}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +27,10 @@ Global
 		{C7F5EF53-D768-4CB8-BAE9-46C5730B795E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C7F5EF53-D768-4CB8-BAE9-46C5730B795E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C7F5EF53-D768-4CB8-BAE9-46C5730B795E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{494733B6-BBAF-4108-B2B1-A59B26158A98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{494733B6-BBAF-4108-B2B1-A59B26158A98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{494733B6-BBAF-4108-B2B1-A59B26158A98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{494733B6-BBAF-4108-B2B1-A59B26158A98}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
