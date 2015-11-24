@@ -158,8 +158,10 @@ namespace UserInterface
 
 
                 }
-
-                GenerateTests();
+                
+                    GenerateTests();
+               
+                
             }
         }
 

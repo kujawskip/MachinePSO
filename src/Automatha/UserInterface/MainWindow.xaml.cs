@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,23 +21,37 @@ namespace UserInterface
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window , INotifyPropertyChanged
     {
         private bool _inputLoaded;
-        public bool ParamethersValidated { get; private set; }
+
+        public bool ParamethersValidated
+        {
+            get { return _paramethersValidated; }
+            private set { _paramethersValidated = value; NotifyPropertyChanged("ParamethersValidated"); NotifyPropertyChanged("ReadyToStart"); }
+        }
+
         private int ParticleCount;
         private double VelocityWeight, CognitiveWeight, GlobalWeight;
         private Machine Automaton;
         private TestSets Set;
+        private bool _testsCreated;
+        private bool _paramethersValidated;
+
         public bool InputLoaded
         {
             get { return _inputLoaded; }
             set { _inputLoaded = value;
                 TestsCreated = false;
+                NotifyPropertyChanged("InputLoaded");
             }
         }
 
-        public bool TestsCreated { get; private set; }
+        public bool TestsCreated
+        {
+            get { return _testsCreated; }
+            private set { _testsCreated = value; NotifyPropertyChanged("TestsCreated"); NotifyPropertyChanged("ReadyToStart"); }
+        }
 
         public bool ReadyToStart
         {
@@ -47,8 +62,9 @@ namespace UserInterface
             _inputLoaded = false;
             ParamethersValidated = false;
             TestsCreated = false;
-            DataContext = this;
             InitializeComponent();
+
+            DataContext = this;
         }
 
         private void TextBoxHandler(object sender, EventArgs e)
@@ -88,7 +104,11 @@ namespace UserInterface
             GlobalWeight = Weight3;
             return true;
         }
-
+        public void NotifyPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             InputLoaded = LoadAutomaton();
@@ -96,7 +116,9 @@ namespace UserInterface
 
         private bool LoadAutomaton()
         {
-            throw new NotImplementedException();
+         //   throw new NotImplementedException();
+            Automaton = Machine.GenerateRandomMachine(4, new Alphabet(new[] {'0', '1', '2'}));
+            return true;
         }
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
@@ -125,5 +147,7 @@ namespace UserInterface
         {
             throw new NotImplementedException();
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }
