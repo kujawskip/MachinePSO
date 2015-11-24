@@ -1,6 +1,8 @@
 ﻿using LanguageProcessor;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,17 +16,101 @@ namespace TestGenerator
             return new Tuple<T1, T2>(t.Item2, t.Item1);
         }
 
-        public static bool LoadSetFromFile(string path,Machine Automaton,out TestSets sets)
+        private TestSets(Dictionary<Tuple<int[], int[]>, bool> testSet, Dictionary<Tuple<int[], int[]>, bool> controlSet, Machine m)
         {
-            //warto obsluzyc sytuacje gdzie TestSet z pliku ma nie rowna dlugosc alfabetu do zaladowanego automatu - nie wiem czy to tu czy w UI
-            throw new NotImplementedException();
-            // Wyjatki zwiazane z odczytem/zapisem do pliku - obslugujemy tu i zwracamy false.
+            TestSet = testSet;
+            ControlSet = controlSet;
+            LetterCount = m.LetterCount;
+        }
+
+        public static bool LoadSetFromFile(string path, Machine m, out TestSets sets)
+        {
+            bool result = false;
+            sets = null;
+            using (var reader = new StreamReader(path, Encoding.UTF8))
+            {
+                try
+                {
+
+                    var filetext = reader.ReadToEnd();
+                    var localSets = filetext.Split(new string[] { "!!TestSet:", "!!ControlSet:" }, StringSplitOptions.RemoveEmptyEntries);
+                    if (localSets.Length != 2) throw new ArgumentException("Wrong paragraph format");
+                    var testSet = ParseSets(localSets[0]);
+                    var controlSet = ParseSets(localSets[1]);
+
+                    if (testSet.Keys.Any(x => x.Item1.Any(i => i >= m.LetterCount || i < 0) || x.Item2.Any(i => i >= m.LetterCount || i < 0)))
+                        throw new ArgumentException("Alphabets of the machine and file does not match");
+
+                    sets = new TestSets(testSet, controlSet, m);
+                    result = true;
+                }
+                catch (Exception e)
+                {
+                    sets = null;
+                    result = false;
+                    Debug.WriteLine(e.Message);
+                }
+            }
+            return result;
+        }
+
+        private static Dictionary<Tuple<int[], int[]>, bool> ParseSets(string v)
+        {
+            var result = new Dictionary<Tuple<int[], int[]>, bool>();
+            var lines = v.Split('\n');
+            foreach(var line in lines)
+            {
+                var split = line.Split(new char[] { ';' });
+                if (split.Length != 3) throw new ArgumentException("Wrong line format");
+                var item1 = split[0].Split(new char[] { ',' }).Select(x => int.Parse(x)).ToArray();
+                var item2 = split[1].Split(new char[] { ',' }).Select(x => int.Parse(x)).ToArray();
+                var val = bool.Parse(split[2]);
+                result.Add(new Tuple<int[], int[]>(item1, item2), val);
+            }
+            return result;
+        }
+
+        private static string ConvertToString(Dictionary<Tuple<int[], int[]>, bool> dict)
+        {
+            var sb = new StringBuilder();
+            foreach(var pair in dict)
+            {
+                var lb = new StringBuilder();
+                lb.Append(SeparatedArray(pair.Key.Item1, ','));
+                lb.Append(';');
+                lb.Append(SeparatedArray(pair.Key.Item2, ','));
+                lb.Append(';');
+                lb.Append(pair.Value);
+                sb.AppendLine(lb.ToString());
+            }
+            return sb.ToString();
         }
 
         public bool SaveSetToFile(string path)
         {
-            throw new NotImplementedException();
-            // Wyjatki zwiazane z odczytem/zapisem do pliku - obslugujemy tu i zwracamy false.
+            bool result = false;
+            using (var writer = new StreamWriter(path, false, Encoding.UTF8))
+            {
+                try
+                {
+
+                    //var filetext = reader.ReadToEnd();
+                    var sb = new StringBuilder();
+                    sb.AppendLine("!!TestSet:");
+                    sb.AppendLine(ConvertToString(TestSet));
+                    sb.AppendLine("!!ControlSet:");
+                    sb.AppendLine(ConvertToString(ControlSet));
+                    writer.Write(sb.ToString());
+                    result = true;
+
+                }
+                catch (Exception e)
+                {
+                    result = false;
+                    Debug.WriteLine(e.Message);
+                }
+            }
+            return result;
         }
         private static string SeparatedArray<T>(T[] array, char separator)
         {
@@ -56,11 +142,8 @@ namespace TestGenerator
         { get; private set; }
         Random rand = new Random();
 
-        public TestSets(Machine m, int thoroughCount = 5, int randomCount = 50, int controlCount = 500)
+        public TestSets(Machine m, int thoroughCount = 5, int randomCount = 50, int controlCount = 500):this(new Dictionary<Tuple<int[], int[]>, bool>(), new Dictionary<Tuple<int[], int[]>, bool>(), m)
         {
-            TestSet = new Dictionary<Tuple<int[], int[]>, bool>();
-            ControlSet = new Dictionary<Tuple<int[], int[]>, bool>();
-            LetterCount = m.LetterCount;
             var shortWords = GenerateAllWords(thoroughCount, m);
             var concats = GenerateRandomConcats(shortWords, randomCount + controlCount, m);
             GenerateSets(m, controlCount, randomCount, shortWords, concats);
