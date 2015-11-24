@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,7 +21,7 @@ namespace UserInterface
     /// <summary>
     /// Interaction logic for TestRunner.xaml
     /// </summary>
-    public partial class TestRunner : Window
+    public partial class TestRunner : Window , INotifyPropertyChanged
     {
         public TestRunner(Machine Automaton)
         {
@@ -170,5 +171,11 @@ namespace UserInterface
             DialogResult = true;
             Close();
         }
+        public void NotifyPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }
