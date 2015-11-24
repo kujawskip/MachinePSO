@@ -14,7 +14,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LanguageProcessor;
+using Microsoft.Win32;
 using TestGenerator;
+using System.IO;
 
 namespace UserInterface
 {
@@ -116,8 +118,58 @@ namespace UserInterface
 
         private bool LoadAutomaton()
         {
+
          //   throw new NotImplementedException();
             Automaton = Machine.GenerateRandomMachine(4, new Alphabet(new[] {'0', '1', '2'}));
+
+            OpenFileDialog of = new OpenFileDialog();
+            of.Multiselect = false;
+            var B = of.ShowDialog();
+            if (B.HasValue && B.Value)
+            {
+                char[] alphabetSymbols;
+                double[,] states;
+                var ret = LoadAutomatonFromFile(of.FileName, out states, out alphabetSymbols);
+                Automaton = new Machine(new Alphabet(alphabetSymbols), states);
+                return ret;
+            }
+            return false;
+        }
+
+        private bool LoadAutomatonFromFile(string path, out double[,] stateFunction, out char[] alphabetSymbols)
+        {
+            stateFunction = null;
+            alphabetSymbols = null;
+            string[] linesInFile = null;
+            try
+            {
+                linesInFile = File.ReadAllLines(path);
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
+            int numberOfStates = int.Parse(linesInFile[0].Split(',')[0]);
+            int numberOfAlphabetLetters = int.Parse(linesInFile[0].Split(',')[1]);
+
+            alphabetSymbols = new char[numberOfAlphabetLetters];
+
+            for (int i = 0; i < numberOfAlphabetLetters; i++)
+                alphabetSymbols[i] = (char)(i + 48);
+
+
+            stateFunction = new double[numberOfStates, numberOfAlphabetLetters];
+            var line = linesInFile[0].Split(',');
+            for (int i = 0; i < numberOfStates; i++)
+            {
+                for (int j = 0; j < numberOfAlphabetLetters; j++)
+                {
+                    stateFunction[i, j] = (double) line[i*numberOfAlphabetLetters + j  + 2][0] - 48;
+                }
+            }
+
+
             return true;
         }
 

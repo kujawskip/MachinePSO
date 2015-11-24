@@ -40,7 +40,7 @@ namespace LanguageProcessor
             return state;
         }
 
-        private Machine(Alphabet A, double[,] SF)
+        public Machine(Alphabet A, double[,] SF)
         {
             alphabet = A;
             stateFunction = SF;
