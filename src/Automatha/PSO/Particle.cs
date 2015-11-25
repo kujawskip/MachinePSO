@@ -43,11 +43,7 @@ namespace PSO
                 Max = Core.GetFunctionCopy();
 
             }
-            if (LocalError < GlobalError)
-            {
-                LastChange = -1;
-                GlobalMax = Max;
-            }
+            
         }
 
         public static bool StartSteps()
@@ -73,6 +69,11 @@ namespace PSO
                 }
 
             }
+           
+        }
+
+        public void Update()
+        {
             int Error = MachinePSO.Words.Sum(WordPair => Core.AreWordsInRelation(WordPair.Item1, WordPair.Item2) == MachinePSO.AreWordsInRelation(WordPair.Item1, WordPair.Item2) ? 0 : 1);
             if (Error < LocalError)
             {
@@ -82,11 +83,11 @@ namespace PSO
             }
             if (LocalError < GlobalError)
             {
+                GlobalError = LocalError;
                 LastChange = -1;
                 GlobalMax = Max;
             }
         }
-
         public static void EndStep()
         {
             LastChange++;

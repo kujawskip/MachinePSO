@@ -120,7 +120,7 @@ namespace UserInterface
         {
 
          //   throw new NotImplementedException();
-            Automaton = Machine.GenerateRandomMachine(4, new Alphabet(new[] {'0', '1', '2'}));
+         //   Automaton = Machine.GenerateRandomMachine(4, new Alphabet(new[] {'0', '1', '2'}));
          //   return true;
             OpenFileDialog of = new OpenFileDialog();
             of.Multiselect = false;

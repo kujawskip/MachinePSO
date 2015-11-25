@@ -1,0 +1,53 @@
+﻿<Window x:Class="UserInterface.PSO"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="PSO" Height="300" Width="300">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Column="2" Grid.ColumnSpan="4">Ilość cząsteczek: </TextBlock>
+        <TextBlock Grid.Row ="0" Grid.Column="7" Text="{Binding ParticleCount}"></TextBlock>
+        <TextBlock Grid.Row ="1" Grid.Column="2" Grid.ColumnSpan="4">Ilość stanów: </TextBlock>
+        <TextBlock Grid.Row="1" Grid.Column="7" Text="{Binding State}"></TextBlock>
+        <TextBlock Grid.Row ="2" Grid.Column="2" Grid.ColumnSpan="4">Minimalny Błąd:</TextBlock>
+        <TextBlock Grid.Row="2" Grid.Column="7" Text="{Binding BestError}"></TextBlock>
+        <Grid Name="ModifableGrid" Grid.Row="6" Grid.Column="1" Grid.RowSpan="9" Grid.ColumnSpan="7"/>
+        <Grid Name="StaticGrid" Grid.Row="6" Grid.Column="8" Grid.RowSpan="9" Grid.ColumnSpan="7"></Grid>
+        <Button Grid.ColumnSpan="2" Grid.Column="10" HorizontalAlignment="Left" Height="16" Name="StartButton" VerticalAlignment="Top" Click="ButtonBase_OnClick">Start</Button>
+
+    </Grid>
+</Window>

@@ -112,9 +112,11 @@ namespace UserInterface
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog of = new OpenFileDialog();
-            of.Multiselect = false;
-            of.Filter = "Pliki testów (*.tst) | *.tst";
+            OpenFileDialog of = new OpenFileDialog
+            {
+                Multiselect = false,
+                Filter = "Pliki testów (*.tst) | *.tst"
+            };
             var B = of.ShowDialog();
             if (B.HasValue && B.Value)
             {
@@ -159,11 +161,11 @@ namespace UserInterface
 
 
                 }
-                
-                    GenerateTests();
+            }
+            GenerateTests();
                
                 
-            }
+            
         }
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
