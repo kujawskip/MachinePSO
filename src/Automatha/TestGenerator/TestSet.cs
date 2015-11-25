@@ -58,12 +58,18 @@ namespace TestGenerator
         {
             var result = new Dictionary<Tuple<int[], int[]>, bool>();
             var lines = v.Split('\n');
-            foreach(var line in lines)
+            foreach(var l in lines)
             {
+                var line = l.Trim();
+                if (string.IsNullOrWhiteSpace(line)) continue;
                 var split = line.Split(new char[] { ';' });
                 if (split.Length != 3) throw new ArgumentException("Wrong line format");
-                var item1 = split[0].Split(new char[] { ',' }).Select(x => int.Parse(x)).ToArray();
-                var item2 = split[1].Split(new char[] { ',' }).Select(x => int.Parse(x)).ToArray();
+                var item1temp = split[0].Split(new char[] { ',' });
+                var item1 = item1temp.Length == 1 && string.IsNullOrWhiteSpace(item1temp[0]) ? new int[0] :
+                    item1temp.Select(x => int.Parse(x)).ToArray();
+                var item2temp = split[1].Split(new char[] { ',' });
+                var item2 = item2temp.Length == 1 && string.IsNullOrWhiteSpace(item2temp[0]) ? new int[0] :
+                    item2temp.Select(x => int.Parse(x)).ToArray();
                 var val = bool.Parse(split[2]);
                 result.Add(new Tuple<int[], int[]>(item1, item2), val);
             }
@@ -155,35 +161,36 @@ namespace TestGenerator
             //Do słów długości thoroughCount
             for (int i = 1; i <= wordLength; i++)
             {
-                var allCount = all.Count;
+                var previousStep = all.Where(x => x.Length == i - 1).ToArray();
+                //var allCount = all.Count;
                 //Dodanie j-tej litery
                 for (int j = 0; j < LetterCount; j++)
                 {
                     //na koniec k-tego słowa
-                    for (int k = 0; k < allCount; k++)
+                    for (int k = 0; k < previousStep.Length; k++)
                     {
-                        var nArr = new int[all[k].Length + 1];
-                        all[k].CopyTo(nArr, 0);
-                        nArr[all[k].Length] = j;
+                        var nArr = new int[previousStep[k].Length + 1];
+                        previousStep[k].CopyTo(nArr, 0);
+                        nArr[previousStep[k].Length] = j;
                         all.Add(nArr);
                     }
                 }
             }
-
             return all;
         }
 
         private List<int[]> GenerateRandomConcats(List<int[]> words, int randomCount, Machine m)
         {
-            var res = new List<int[]>();
+            var wor = words.Select(x => m.alphabet.Translate(x.ToList())).ToArray();
+            var res = new List<string>();
             for (int i=0; i<randomCount; i++)
             {
-                var w = new int[0]; //Epsilon
-                while (res.Contains(w)|| words.Contains(w))
-                    w = words[rand.Next(words.Count)].Concat(words[rand.Next(words.Count)]).ToArray();
+                var w = "";
+                while (res.Contains(w) || wor.Contains(w))
+                    w = wor[rand.Next(wor.Length)] + wor[rand.Next(wor.Length)];
                 res.Add(w);
             }
-            return res;
+            return res.Select(x=>m.alphabet.Translate(x).ToArray()).ToList();
         }
 
         private void GenerateSets(Machine m, int controlCount, int testCount, List<int[]> shortWords, List<int[]> randomWords)
@@ -191,7 +198,7 @@ namespace TestGenerator
             var allWords = shortWords.Concat(randomWords).Select(x => m.alphabet.Translate(x.ToList())).ToArray();
             var testSetTemp = new Dictionary<Tuple<string, string>, bool>();
             for (int i=0; i<shortWords.Count; i++)
-                for(int j=i+1; j<shortWords.Count; i++)
+                for(int j=i+1; j<shortWords.Count; j++)
                 {
                     var rel = m.AreWordsInRelation(shortWords[i], shortWords[j]);
                     var w1 = m.alphabet.Translate(shortWords[i].ToList());

@@ -114,7 +114,7 @@ namespace UserInterface
         {
             OpenFileDialog of = new OpenFileDialog();
             of.Multiselect = false;
-            of.Filter = "Pliki testów (.tst) | .tst";
+            of.Filter = "Pliki testów (*.tst) | *.tst";
             var B = of.ShowDialog();
             if (B.HasValue && B.Value)
             {
