@@ -36,14 +36,7 @@ namespace PSO
                     velocity[i, j] = random.NextDouble()*(core.StateCount - 1);
                 }
             }
-            int Error = MachinePSO.Words.Sum(WordPair => Core.AreWordsInRelation(WordPair.Item1, WordPair.Item2) == MachinePSO.AreWordsInRelation(WordPair.Item1, WordPair.Item2) ? 0 : 1);
-            if (Error < LocalError)
-            {
-                LocalError = Error;
-                Max = Core.GetFunctionCopy();
-
-            }
-            
+            Update();
         }
 
         public static bool StartSteps()

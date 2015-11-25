@@ -13,18 +13,19 @@ namespace PSO
     {
         public static List<Tuple<int[], int[]>> Words;
         private static LanguageRelation relation;
-        private static Machine BestMachine;
-        private static int BestError;
+        public static Machine BestMachine;
+        public static int BestError;
         private static Alphabet alphabet;
         private static int MaxStates;
-        private static List<Particle> Particles; 
+        private static List<Particle> Particles;
         public static double Omega, OmegaLocal, OmegaGlobal;
-        public static void Initialize(List<Tuple<int[],int[]>> words, LanguageRelation relation,int MaxStates,Alphabet A)
+        public static void Initialize(List<Tuple<int[], int[]>> words, LanguageRelation relation, int MaxStates, Alphabet A)
         {
+            Particles = new List<Particle>();
             Words = words;
             MachinePSO.relation = relation;
             BestError = int.MaxValue;
-            BestMachine = Machine.GenerateRandomMachine(2,A);
+            BestMachine = Machine.GenerateRandomMachine(1, A);
             alphabet = A;
             MachinePSO.MaxStates = MaxStates;
         }
@@ -41,7 +42,7 @@ namespace PSO
             foreach (var P in Particles)
             {
                 P.Step();
-                
+
             }
             foreach (var P in Particles)
             {
@@ -51,34 +52,26 @@ namespace PSO
             return true;
         }
 
-        public static bool Iterate(int State,int ParticlesCount,int MaxSteps=10,double ProgressRatio =0.2)
+        public static bool Iterate(int State, int ParticlesCount, int MaxSteps = 10, double ProgressRatio = 0.2)
         {
 
             if (State > MaxStates) return false;
-            int ProgressCount = (int) (ProgressRatio*ParticlesCount);
+            int ProgressCount = (int)(ProgressRatio * ParticlesCount);
             int RandomCount = ParticlesCount - ProgressCount;
             Particle.Initialize(MaxSteps);
             List<Machine> machines = new List<Machine>();
-            if (BestMachine == null)
+
+            machines.AddRange(BestMachine.GetMachinesWithMoreStates(ProgressCount, State - BestMachine.StateCount));
+            for (int i = 0; i < RandomCount; i++)
             {
-                for (int i = 0; i < RandomCount + ProgressCount; i++)
-                {
-                  machines.Add(Machine.GenerateRandomMachine(State,alphabet));   
-                }
+                machines.Add(Machine.GenerateRandomMachine(State, alphabet));
             }
-            else
-            {
-                machines.AddRange(BestMachine.GetMachinesWithMoreStates(ProgressCount,State-BestMachine.StateCount));
-                for (int i = 0; i < RandomCount; i++)
-                {
-                    machines.Add(Machine.GenerateRandomMachine(State, alphabet));
-                }
-            }
+
             Particles.Clear();
             Particles.AddRange(machines.Select(M => new Particle(M)));
             while (Step())
             {
-                if (Particle.GlobalError==0)
+                if (Particle.GlobalError == 0)
                 {
                     break;
                 }
