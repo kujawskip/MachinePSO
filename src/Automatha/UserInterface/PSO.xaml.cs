@@ -66,24 +66,24 @@ namespace UserInterface
         {
             int state = State;
             int pCount = ParticleCount;
-            bool inProgress = true;
-            Task update = Task.Factory.StartNew(async () =>
-            {
-                while (inProgress)
-                {
-                    await Task.Delay(TimeSpan.FromSeconds(1));
-                    NotifyPropertyChanged("BestError");
-                }
-                NotifyPropertyChanged("BestError");
-            });
+            //bool inProgress = true;
+            //Task update = Task.Factory.StartNew(async () =>
+            //{
+            //    while (inProgress)
+            //    {
+            //        await Task.Delay(TimeSpan.FromSeconds(1));
+            //        NotifyPropertyChanged("BestError");
+            //    }
+            //    NotifyPropertyChanged("BestError");
+            //});
             while (await Task.Run(async () => await MachinePSO.Iterate(state, pCount)))
             {
                 NotifyPropertyChanged("BestError");
                 State++;
                 state = State;
             }
-            inProgress = false;
-            await update;
+            //inProgress = false;
+            //await update;
             MessageBox.Show("Calculation finished", "Message", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 

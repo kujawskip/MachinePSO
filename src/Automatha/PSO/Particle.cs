@@ -30,15 +30,16 @@ namespace PSO
         {
             LocalError = int.MaxValue;
             Core = core;
+            if (GlobalMax == null) GlobalMax = core.GetFunctionCopy();
             velocity = new double[core.StateCount,core.alphabet.Letters.Length];
             for (int i = 0; i < core.StateCount; i++)
             {
                 for (int j = 0; j < core.alphabet.Letters.Length; j++)
                 {
-                    velocity[i, j] = random.NextDouble()*(core.StateCount - 1);
+                    velocity[i, j] = random.NextDouble()*(core.StateCount - 1); //velocity może mieć dowolne wartości, nawet ujemne
                 }
             }
-            UpdateLocal();
+            LocalError = UpdateLocal();
             TryUpdateGlobal();
         }
 
@@ -52,14 +53,14 @@ namespace PSO
             int actualError = int.MaxValue;
             await Task.Run(() =>
             {
-                if (random.NextDouble() < DeathChance)
-                {
-                    Core = Machine.GenerateRandomMachine(Core.StateCount, Core.alphabet);
-                    for (int i = 0; i < Core.StateCount; i++)
-                        for (int j = 0; j < Core.alphabet.Letters.Length; j++)
-                            velocity[i, j] = random.Next(-Core.StateCount, Core.StateCount);
-                    Max = Core.GetFunctionCopy();
-                }
+                //if (random.NextDouble() < DeathChance)
+                //{
+                //    Core = Machine.GenerateRandomMachine(Core.StateCount, Core.alphabet);
+                //    for (int i = 0; i < Core.StateCount; i++)
+                //        for (int j = 0; j < Core.alphabet.Letters.Length; j++)
+                //            velocity[i, j] = random.NextDouble()*random.Next(-Core.StateCount, Core.StateCount);
+                //    Max = Core.GetFunctionCopy();
+                //}
                 for (int i = 0; i < Core.StateCount; i++)
                 {
                     for (int j = 0; j < Core.alphabet.Letters.Length; j++)
@@ -96,7 +97,7 @@ namespace PSO
             {
                 GlobalError = LocalError;
                 LastChange = -1;
-                GlobalMax = Max;
+                GlobalMax = Core.GetFunctionCopy();
             }
         }
         public static void EndStep()

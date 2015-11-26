@@ -19,6 +19,7 @@ namespace PSO
         private static int MaxStates;
         private static List<Particle> Particles;
         public static double Omega, OmegaLocal, OmegaGlobal;
+
         public static void Initialize(List<Tuple<int[], int[]>> words, LanguageRelation relation, int MaxStates, Alphabet A)
         {
             Particles = new List<Particle>();
