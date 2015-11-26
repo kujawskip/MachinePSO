@@ -68,22 +68,22 @@ namespace PSO
 
             Particles.Clear();
             Particles.AddRange(machines.Select(M => new Particle(M)));
-            bool block = false;
+            //bool block = false;
             var updates = new List<Task>();
             while (await Step() && Particle.GlobalError != 0)
             {
-                if (!block)
-                    updates.Add(Task.Factory.StartNew(() =>
-                    {
-                        if (Particle.GlobalError < BestError)
-                        {
-                            BestMachine.stateFunction = Particle.GlobalMax;
-                            BestError = Particle.GlobalError;
-                        }
-                        block = false;
-                    }));
+                //if (!block)
+                //    updates.Add(Task.Factory.StartNew(() =>
+                //    {
+                if (Particle.GlobalError < BestError)
+                {
+                    BestMachine.stateFunction = Particle.GlobalMax;
+                    BestError = Particle.GlobalError;
+                }
+                //        block = false;
+                //    }));
             }
-            await Task.WhenAll(updates.ToArray());
+            //await Task.WhenAll(updates.ToArray());
             //if (Particle.GlobalError < BestError)
             //{
             //    BestMachine.stateFunction = Particle.GlobalMax;

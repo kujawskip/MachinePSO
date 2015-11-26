@@ -34,7 +34,7 @@ namespace LanguageProcessor
             foreach (var symbol in word)
             {
                 double c = stateFunction[state, symbol];
-                //c = Math.Round(c);
+                c = Math.Round(c);
                 state = (int)c;
             }
             return state;
