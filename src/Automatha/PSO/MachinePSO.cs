@@ -36,29 +36,31 @@ namespace PSO
             MachinePSO.OmegaGlobal = OmegaGlobal;
             MachinePSO.OmegaLocal = OmegaLocal;
         }
-        private static bool Step()
+        private static async Task<bool> Step()
         {
             if (!Particle.StartSteps()) return false;
-            foreach (var P in Particles)
-            {
-                P.Step();
+            var steps = Particles.Select(p => Task.Factory.StartNew(() => p.Step())).ToArray();
+            //foreach (var P in Particles)
+            //{
+            //    P.Step();
 
-            }
+            //}
+            await Task.WhenAll(steps);
             foreach (var P in Particles)
             {
-                P.Update();
+                await P.Update();
             }
             Particle.EndStep();
             return true;
         }
 
-        public static bool Iterate(int State, int ParticlesCount, int MaxSteps = 10, double ProgressRatio = 0.2)
+        public static async Task<bool> Iterate(int State, int ParticlesCount, int MaxSteps = 10, double ProgressRatio = 0.2)
         {
 
             if (State > MaxStates) return false;
             int ProgressCount = (int)(ProgressRatio * ParticlesCount);
             int RandomCount = ParticlesCount - ProgressCount;
-            Particle.Initialize(MaxSteps);
+            Particle.Initialize(MaxSteps, 0.03);
             List<Machine> machines = new List<Machine>();
 
             machines.AddRange(BestMachine.GetMachinesWithMoreStates(ProgressCount, State - BestMachine.StateCount));
@@ -69,7 +71,7 @@ namespace PSO
 
             Particles.Clear();
             Particles.AddRange(machines.Select(M => new Particle(M)));
-            while (Step())
+            while (await Step())
             {
                 if (Particle.GlobalError == 0)
                 {

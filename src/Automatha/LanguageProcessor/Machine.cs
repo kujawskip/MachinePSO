@@ -83,7 +83,7 @@ namespace LanguageProcessor
                 var SF = new double[StateCount + statesToAdd, LetterCount];
                 for (int stateIndex = 0; stateIndex < SF.GetLength(0); stateIndex++)
                 {
-                    for (int letterIndex = 0; letterIndex < SF.GetLength(1); stateIndex++)
+                    for (int letterIndex = 0; letterIndex < SF.GetLength(1); letterIndex++)
                     {
                         SF[stateIndex, letterIndex] =
                             stateIndex >= StateCount ?

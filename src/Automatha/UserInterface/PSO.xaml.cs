@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using LanguageProcessor;
 using PSO;
 using TestGenerator;
+using System.Threading;
 
 namespace UserInterface
 {
@@ -24,9 +25,11 @@ namespace UserInterface
     public partial class PSO : Window, INotifyPropertyChanged
     {
         private int ParticleCount;
+        int TestCount;
         public PSO(double Omega,double OmegaLocal,double OmegaGlobal,int ParticleCount,TestSets set,Machine Base,int MaxStates=15)
         {
             InitializeComponent();
+            TestCount = set.TestSet.Count;
             DataContext = this;
             this.ParticleCount = ParticleCount;
             MachinePSO.Initialize(set.TestSet.Keys.ToList(),(w1,w2)=>(set.TestSet[new Tuple<int[],int[]>(w1,w2)]),MaxStates,Base.alphabet);
@@ -53,26 +56,35 @@ namespace UserInterface
                 NotifyPropertyChanged("State");
             }
         }
-
-        public int BestError
+        
+        public float BestError
         {
-            get { return MachinePSO.BestError; }
+            get { return MachinePSO.BestError==int.MaxValue? 100 : 100*(float)MachinePSO.BestError/(float)TestCount; }
         }
         private int state = 2;
-        private void StartPSO()
+        private async void StartPSO()
         {
-            
-
-
-
-                while (MachinePSO.Iterate(state, ParticleCount))
+            int state = State;
+            int pCount = ParticleCount;
+            bool inProgress = true;
+            Task update = Task.Factory.StartNew(async () =>
+            {
+                while (inProgress)
                 {
-                    State++;
+                    await Task.Delay(TimeSpan.FromSeconds(1));
                     NotifyPropertyChanged("BestError");
-                    
-                    //TO DO: Wyswietlenie nowego automatu
                 }
-       
+                NotifyPropertyChanged("BestError");
+            });
+            while (await Task.Run(async () => await MachinePSO.Iterate(state, pCount)))
+            {
+                NotifyPropertyChanged("BestError");
+                State++;
+                state = State;
+            }
+            inProgress = false;
+            await update;
+            MessageBox.Show("Calculation finished", "", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

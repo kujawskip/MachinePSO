@@ -121,7 +121,7 @@ namespace UserInterface
 
          //   throw new NotImplementedException();
             Automaton = Machine.GenerateRandomMachine(4, new Alphabet(new[] {'0', '1', '2'}));
-            return true;
+            //return true;
             OpenFileDialog of = new OpenFileDialog();
             of.Multiselect = false;
             var B = of.ShowDialog();
@@ -210,7 +210,7 @@ namespace UserInterface
         {
             PSO pso = new PSO(VelocityWeight, CognitiveWeight, GlobalWeight, ParticleCount, Set, Automaton);
             pso.ShowDialog();
-            
+            //pso.Show();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
