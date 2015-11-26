@@ -160,14 +160,25 @@ namespace UserInterface
 
 
             stateFunction = new double[numberOfStates, numberOfAlphabetLetters];
-            var line = linesInFile[0].Split(',');
-            for (int i = 0; i < numberOfStates; i++)
+
+            //var alphabet = new Alphabet(alphabetSymbols);
+            for (int i = 1; i < linesInFile.Length; i++)
             {
-                for (int j = 0; j < numberOfAlphabetLetters; j++)
-                {
-                    stateFunction[i, j] = (double) line[i*numberOfAlphabetLetters + j  + 2][0] - 48;
-                }
+                var line = linesInFile[i].Split(',');
+                var state = int.Parse(line[0]);
+                var input = int.Parse(line[1]);
+                var outstate = int.Parse(line[2]);
+                stateFunction[state, input] = outstate;
             }
+
+            //var line = linesInFile[i].Split(',');
+            //for (int i = 0; i < numberOfStates; i++)
+            //{
+            //    for (int j = 0; j < numberOfAlphabetLetters; j++)
+            //    {
+            //        stateFunction[i, j] = (double) line[i*numberOfAlphabetLetters + j  + 2][0] - 48;
+            //    }
+            //}
 
 
             return true;
