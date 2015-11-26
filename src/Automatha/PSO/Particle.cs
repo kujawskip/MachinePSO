@@ -36,7 +36,7 @@ namespace PSO
             {
                 for (int j = 0; j < core.alphabet.Letters.Length; j++)
                 {
-                    velocity[i, j] = random.NextDouble()*(core.StateCount - 1); //velocity może mieć dowolne wartości, nawet ujemne
+                    velocity[i, j] = random.Next(-core.StateCount, core.StateCount) + (random.NextDouble() * 2 - 0.5); //velocity może mieć dowolne wartości, nawet ujemne
                 }
             }
             LocalError = UpdateLocal();
@@ -71,7 +71,7 @@ namespace PSO
                         velocity[i, j] = newv;
                         Core.stateFunction[i, j] += velocity[i, j];
                         if (Core.stateFunction[i, j] < 0) Core.stateFunction[i, j] = 0;
-                        if (Core.stateFunction[i, j] > Core.StateCount-1) Core.stateFunction[i, j] = (double)(Core.StateCount - 1);
+                        if (Core.stateFunction[i, j] > Core.StateCount - 1) Core.stateFunction[i, j] = (double)(Core.StateCount - 1 - double.Epsilon);
                     }
 
                 }
