@@ -19,6 +19,7 @@ namespace PSO
         private static int MaxStates;
         private static List<Particle> Particles;
         public static double Omega, OmegaLocal, OmegaGlobal;
+        private static Random random = new Random();
 
         public static void Initialize(List<Tuple<int[], int[]>> words, LanguageRelation relation, int MaxStates, Alphabet A)
         {
@@ -40,7 +41,7 @@ namespace PSO
         private static async Task<bool> Step()
         {
             if (!Particle.StartSteps()) return false;
-            var steps = Particles.Select(p => Task.Factory.StartNew(() => p.Step())).ToArray();
+            var steps = Particles.Select(p => Task.Run(() => p.Step())).ToArray();
             await Task.WhenAll(steps);
             var best = Particles.Find(x => x.LocalError == Particles.Min(y => y.LocalError));
             best.TryUpdateGlobal();
@@ -58,7 +59,8 @@ namespace PSO
             if (State > MaxStates) return false;
             int ProgressCount = (int)(ProgressRatio * ParticlesCount);
             int RandomCount = ParticlesCount - ProgressCount;
-            Particle.Initialize(MaxSteps, 0.03);
+            Particle.Initialize(MaxSteps);
+            //Particle.Initialize(MaxSteps, 0.009);
             List<Machine> machines = new List<Machine>();
 
             machines.AddRange(BestMachine.GetMachinesWithMoreStates(ProgressCount, State - BestMachine.StateCount));
@@ -80,6 +82,14 @@ namespace PSO
                 {
                     BestMachine.stateFunction = Particle.GlobalMax;
                     BestError = Particle.GlobalError;
+                }
+                var tasks = Particles.Select(x => Task.Run(() =>
+                {
+                    return random.NextDouble() > Particle.DeathChance ? x : new Particle(Machine.GenerateRandomMachine(x.Core.StateCount, x.Core.alphabet));
+                })).ToArray();
+                for(int i=0; i<Particles.Count; i++)
+                {
+                    Particles[i] = await tasks[i];
                 }
                 //        block = false;
                 //    }));

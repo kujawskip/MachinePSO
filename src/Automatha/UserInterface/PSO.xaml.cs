@@ -62,6 +62,8 @@ namespace UserInterface
             get { return MachinePSO.BestError==int.MaxValue? 100 : 100*(float)MachinePSO.BestError/(float)TestCount; }
         }
         private int state = 2;
+
+        bool ClosingRequested = false;
         private async void StartPSO()
         {
             int state = State;
@@ -81,6 +83,8 @@ namespace UserInterface
                 NotifyPropertyChanged("BestError");
                 State++;
                 state = State;
+                if (ClosingRequested)
+                    return;
             }
             //inProgress = false;
             //await update;
@@ -88,5 +92,10 @@ namespace UserInterface
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            ClosingRequested = true;
+        }
     }
 }

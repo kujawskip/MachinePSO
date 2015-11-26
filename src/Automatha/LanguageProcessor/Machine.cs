@@ -9,6 +9,7 @@ namespace LanguageProcessor
     public class Machine
     {
         public double[,] stateFunction; //private?
+        private static Random R = new Random();
         public int StateCount
         {
             get
@@ -49,7 +50,6 @@ namespace LanguageProcessor
         public static Machine GenerateRandomMachine(int states, Alphabet alphabet)
         {
             double[,] SF = new double[states, alphabet.Letters.Length];
-            Random R = new Random();
             for (int i = 0; i < states; i++)
             {
                 for (int j = 0; j < alphabet.Letters.Length; j++)

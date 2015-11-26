@@ -15,7 +15,7 @@ namespace PSO
         private static int LastChange;
         private static int MaxChange;
         private static Random random;
-        private static double DeathChance;
+        public static double DeathChance;
 
         public static void Initialize(int maxSteps, double deathChance=0)
         {
@@ -53,21 +53,13 @@ namespace PSO
             int actualError = int.MaxValue;
             await Task.Run(() =>
             {
-                //if (random.NextDouble() < DeathChance)
-                //{
-                //    Core = Machine.GenerateRandomMachine(Core.StateCount, Core.alphabet);
-                //    for (int i = 0; i < Core.StateCount; i++)
-                //        for (int j = 0; j < Core.alphabet.Letters.Length; j++)
-                //            velocity[i, j] = random.NextDouble()*random.Next(-Core.StateCount, Core.StateCount);
-                //    Max = Core.GetFunctionCopy();
-                //}
                 for (int i = 0; i < Core.StateCount; i++)
                 {
                     for (int j = 0; j < Core.alphabet.Letters.Length; j++)
                     {
-                        var newv = MachinePSO.Omega * velocity[i, j] +
-                                         MachinePSO.OmegaLocal * random.NextDouble() * (Max[i, j] - Core.stateFunction[i, j]) +
-                                         MachinePSO.OmegaGlobal * random.NextDouble() * (GlobalMax[i, j] - Core.stateFunction[i, j]);
+                        var newv = (MachinePSO.Omega * velocity[i, j]) +
+                                         (MachinePSO.OmegaLocal * random.NextDouble() * (Max[i, j] - Core.stateFunction[i, j])) +
+                                         (MachinePSO.OmegaGlobal * random.NextDouble() * (GlobalMax[i, j] - Core.stateFunction[i, j]));
                         velocity[i, j] = newv;
                         Core.stateFunction[i, j] += velocity[i, j];
                         if (Core.stateFunction[i, j] < 0) Core.stateFunction[i, j] = 0;
@@ -105,9 +97,9 @@ namespace PSO
             LastChange++;
         }
 
-        public Machine Core;
-        public double[,] velocity;
-        public double[,] Max;
-        public int LocalError;
+        public volatile Machine Core;
+        public volatile double[,] velocity;
+        public volatile double[,] Max;
+        public volatile int LocalError;
     }
 }
