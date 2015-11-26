@@ -27,10 +27,16 @@ namespace UserInterface
         public PSO(double Omega,double OmegaLocal,double OmegaGlobal,int ParticleCount,TestSets set,Machine Base,int MaxStates=15)
         {
             InitializeComponent();
+            DataContext = this;
             this.ParticleCount = ParticleCount;
             MachinePSO.Initialize(set.TestSet.Keys.ToList(),(w1,w2)=>(set.TestSet[new Tuple<int[],int[]>(w1,w2)]),MaxStates,Base.alphabet);
+            MachinePSO.InputParameters(Omega,OmegaLocal,OmegaGlobal);
         }
-
+        public void NotifyPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
             StartButton.Visibility = Visibility.Collapsed;
@@ -38,14 +44,35 @@ namespace UserInterface
             StartPSO();
         }
 
-        private int State = 2;
+        public int State
+        {
+            get { return state; }
+            set
+            {
+                state = value;
+                NotifyPropertyChanged("State");
+            }
+        }
+
+        public int BestError
+        {
+            get { return MachinePSO.BestError; }
+        }
+        private int state = 2;
         private void StartPSO()
         {
-            while (MachinePSO.Iterate(State, ParticleCount))
-            {
-                State++;
+            
 
-            }
+
+
+                while (MachinePSO.Iterate(state, ParticleCount))
+                {
+                    State++;
+                    NotifyPropertyChanged("BestError");
+                    
+                    //TO DO: Wyswietlenie nowego automatu
+                }
+       
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

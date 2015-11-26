@@ -21,10 +21,11 @@ namespace UserInterface
     /// <summary>
     /// Interaction logic for TestRunner.xaml
     /// </summary>
-    public partial class TestRunner : Window , INotifyPropertyChanged
+    public partial class TestRunner : Window, INotifyPropertyChanged
     {
         public TestRunner(Machine Automaton)
         {
+            DataContext = this;
             InitializeComponent();
             this.Automaton = Automaton;
         }
@@ -32,10 +33,12 @@ namespace UserInterface
         private void LoadSetFromFile(string path)
         {
             bool flag = TestSets.LoadSetFromFile(path, Automaton, out set);
+
             if (!flag)
             {
                 MessageBox.Show("Nie udało się wczytać danych z pliku", "Error");
             }
+            else NotifyPropertyChanged("TestsReady");
         }
 
         private void SaveSetToFile(string path)
@@ -55,7 +58,9 @@ namespace UserInterface
             get { return Set != null; }
         }
 
-        public bool ValidatedParameters { get; private set; }
+        
+
+    public bool ValidatedParameters { get; private set; }
         private TestSets set;
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -90,6 +95,12 @@ namespace UserInterface
         public TestSets Set
         {
             get { return set; }
+            set
+            {
+                set = value;
+                NotifyPropertyChanged("TestsReady");
+            }
+           
         }
 
         private void TextBoxHandler(object sender, EventArgs e)
@@ -99,9 +110,8 @@ namespace UserInterface
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
-            SaveFileDialog of = new SaveFileDialog();
+            SaveFileDialog of = new SaveFileDialog {Filter = "Pliki testów (.tst) | .tst"};
 
-            of.Filter = "Pliki testów (.tst) | .tst";
             var B = of.ShowDialog();
             if (B.HasValue && B.Value)
             {
@@ -128,12 +138,13 @@ namespace UserInterface
         {
             if (ValidatedParameters)
             {
-                set = new TestSets(Automaton, thorough, random, control);
+                Set = new TestSets(Automaton, thorough, random, control);
             }
             else
             {
-                set = new TestSets(Automaton);
+                Set = new TestSets(Automaton);
             }
+
         }
 
         private void Button_Click_3(object sender, RoutedEventArgs e)
