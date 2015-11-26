@@ -38,7 +38,8 @@ namespace PSO
                     velocity[i, j] = random.NextDouble()*(core.StateCount - 1);
                 }
             }
-            Task.Factory.StartNew(async () => await Update()).Wait();
+            UpdateLocal();
+            TryUpdateGlobal();
         }
 
         public static bool StartSteps()
@@ -46,50 +47,57 @@ namespace PSO
             return LastChange != MaxChange;
         }
 
-        public async Task Step()
+        public async Task<int> Step()
         {
-            if (random.NextDouble() < DeathChance)
-            {
-                Core = Machine.GenerateRandomMachine(Core.StateCount, Core.alphabet);
-                for (int i = 0; i < Core.StateCount; i++)
-                    for (int j = 0; j < Core.alphabet.Letters.Length; j++)
-                        velocity[i, j] = random.Next(-Core.StateCount, Core.StateCount);
-            }
-            for (int i = 0; i < Core.StateCount; i++)
-            {
-                for (int j = 0; j < Core.alphabet.Letters.Length; j++)
-                {
-                    velocity[i, j] = MachinePSO.Omega * velocity[i, j] +
-                                     MachinePSO.OmegaLocal * random.NextDouble() * (Max[i, j] - Core.stateFunction[i, j])
-                                     +
-                                     MachinePSO.OmegaGlobal * random.NextDouble() *
-                                     (GlobalMax[i, j] - Core.stateFunction[i, j]);
-                    Core.stateFunction[i, j] += velocity[i, j];
-                    if (Core.stateFunction[i, j] < 0) Core.stateFunction[i, j] = 0;
-                    if (Core.stateFunction[i, j] > Core.StateCount - 1) Core.stateFunction[i, j] = (double)(Core.StateCount - 1);
-                }
-
-            }
-        }
-
-        public async Task Update()
-        {
+            int actualError = int.MaxValue;
             await Task.Run(() =>
             {
-                int Error = MachinePSO.Words.Sum(WordPair => Core.AreWordsInRelation(WordPair.Item1, WordPair.Item2) == MachinePSO.AreWordsInRelation(WordPair.Item1, WordPair.Item2) ? 0 : 1);
-                if (Error < LocalError)
+                if (random.NextDouble() < DeathChance)
                 {
-                    LocalError = Error;
+                    Core = Machine.GenerateRandomMachine(Core.StateCount, Core.alphabet);
+                    for (int i = 0; i < Core.StateCount; i++)
+                        for (int j = 0; j < Core.alphabet.Letters.Length; j++)
+                            velocity[i, j] = random.Next(-Core.StateCount, Core.StateCount);
                     Max = Core.GetFunctionCopy();
+                }
+                for (int i = 0; i < Core.StateCount; i++)
+                {
+                    for (int j = 0; j < Core.alphabet.Letters.Length; j++)
+                    {
+                        var newv = MachinePSO.Omega * velocity[i, j] +
+                                         MachinePSO.OmegaLocal * random.NextDouble() * (Max[i, j] - Core.stateFunction[i, j]) +
+                                         MachinePSO.OmegaGlobal * random.NextDouble() * (GlobalMax[i, j] - Core.stateFunction[i, j]);
+                        velocity[i, j] = newv;
+                        Core.stateFunction[i, j] += velocity[i, j];
+                        if (Core.stateFunction[i, j] < 0) Core.stateFunction[i, j] = 0;
+                        if (Core.stateFunction[i, j] > Core.StateCount-1) Core.stateFunction[i, j] = (double)(Core.StateCount - 1);
+                    }
 
                 }
-                if (LocalError < GlobalError)
-                {
-                    GlobalError = LocalError;
-                    LastChange = -1;
-                    GlobalMax = Max;
-                }
+                actualError = UpdateLocal();
             });
+            return actualError;
+        }
+
+        public int UpdateLocal()
+        {
+            var actualError = MachinePSO.Words.Sum(WordPair => Core.AreWordsInRelation(WordPair.Item1, WordPair.Item2) == MachinePSO.AreWordsInRelation(WordPair.Item1, WordPair.Item2) ? 0 : 1);
+            if (actualError < LocalError)
+            {
+                LocalError = actualError;
+                Max = Core.GetFunctionCopy();
+            }
+            return actualError;
+        }
+
+        public void TryUpdateGlobal()
+        {
+            if (LocalError < GlobalError)
+            {
+                GlobalError = LocalError;
+                LastChange = -1;
+                GlobalMax = Max;
+            }
         }
         public static void EndStep()
         {

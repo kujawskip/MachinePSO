@@ -32,8 +32,8 @@ namespace UserInterface
             TestCount = set.TestSet.Count;
             DataContext = this;
             this.ParticleCount = ParticleCount;
-            MachinePSO.Initialize(set.TestSet.Keys.ToList(),(w1,w2)=>(set.TestSet[new Tuple<int[],int[]>(w1,w2)]),MaxStates,Base.alphabet);
-            MachinePSO.InputParameters(Omega,OmegaLocal,OmegaGlobal);
+            MachinePSO.Initialize(set.TestSet.Keys.ToList(), (w1, w2) => (set.TestSet[new Tuple<int[], int[]>(w1, w2)]), MaxStates, Base.alphabet);
+            MachinePSO.InputParameters(Omega, OmegaLocal, OmegaGlobal);
         }
         public void NotifyPropertyChanged(string propertyName)
         {
@@ -84,7 +84,7 @@ namespace UserInterface
             }
             inProgress = false;
             await update;
-            MessageBox.Show("Calculation finished", "", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("Calculation finished", "Message", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

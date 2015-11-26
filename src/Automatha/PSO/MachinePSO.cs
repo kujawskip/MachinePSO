@@ -40,16 +40,13 @@ namespace PSO
         {
             if (!Particle.StartSteps()) return false;
             var steps = Particles.Select(p => Task.Factory.StartNew(() => p.Step())).ToArray();
+            await Task.WhenAll(steps);
+            var best = Particles.Find(x => x.LocalError == Particles.Min(y => y.LocalError));
+            best.TryUpdateGlobal();
             //foreach (var P in Particles)
             //{
-            //    P.Step();
-
+            //    P.Update();
             //}
-            await Task.WhenAll(steps);
-            foreach (var P in Particles)
-            {
-                await P.Update();
-            }
             Particle.EndStep();
             return true;
         }
@@ -71,19 +68,36 @@ namespace PSO
 
             Particles.Clear();
             Particles.AddRange(machines.Select(M => new Particle(M)));
-            while (await Step())
+            bool block = false;
+            var updates = new List<Task>();
+            while (await Step() && Particle.GlobalError != 0)
             {
-                if (Particle.GlobalError == 0)
-                {
-                    break;
-                }
+                if (!block)
+                    updates.Add(Task.Factory.StartNew(() =>
+                    {
+                        if (Particle.GlobalError < BestError)
+                        {
+                            BestMachine.stateFunction = Particle.GlobalMax;
+                            BestError = Particle.GlobalError;
+                        }
+                        block = false;
+                    }));
             }
-            if (Particle.GlobalError < BestError)
-            {
-                BestMachine.stateFunction = Particle.GlobalMax;
-                BestError = Particle.GlobalError;
-                if (Particle.GlobalError == 0) return false;
-            }
+            await Task.WhenAll(updates.ToArray());
+            //if (Particle.GlobalError < BestError)
+            //{
+            //    BestMachine.stateFunction = Particle.GlobalMax;
+            //    BestError = Particle.GlobalError;
+            //    if (Particle.GlobalError == 0) return false;
+            //}
+        //}
+
+            //if (Particle.GlobalError < BestError)
+            //{
+            //    BestMachine.stateFunction = Particle.GlobalMax;
+            //    BestError = Particle.GlobalError;
+            //    if (Particle.GlobalError == 0) return false;
+            //}
             return true;
         }
         public static bool AreWordsInRelation(int[] list1, int[] list2)
