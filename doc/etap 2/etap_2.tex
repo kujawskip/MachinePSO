@@ -14,6 +14,41 @@
 \institute{Wydział Matematyki i Nauk Informacyjnych, Politechnika Warszawska}
 \maketitle 
 
-\section{Zmiany względem etapu I}
+\section{Szczegóły implementacyjne}
+
+Rozwiązanie zostało zaimplementowane w języku $C\#$ z wykorzystaniem technologii \emph{WPF} do stworzenia środowiska graficznego (\emph{GUI}). Nie były wykorzystywane żadne dodatkowe, zewnętrzne biblioteki.
+
+\subsection{Moduły}
+
+Projekt został podzielony na 4 moduły opisane poniżej.
+
+\subsubsection*{UserInterface}
+Moduł zawiera implementację \emph{GUI} w technologii \emph{WPF} oraz klasy pomocnicze wspomagające interakcję z użytkownikiem, m.in. w celu wczytania automatu z pliku lub wprowadzenia parametrów obliczeń.
+
+\subsubsection*{TestGenerator}
+Moduł zawiera klasę \emph{TestSets}, służącą do przechowywania danych zbiorów: treningowego oraz testowego. Klasa ta potrafi także generować te zbiory, a także zapisywać je do pliku i wczytywać z pliku. Na podstawie danych zawartych w tej klasie można odpowiedzieć na pytanie, czy dwa słowa są w relacji.
+
+\subsubsection*{PSO}
+Moduł zawiera klasę \emph{MachinePSO} zawierającą główną pętlę algorytmu \emph{PSO} oraz klasę \emph{Particle} będącą reprezentacją pojedynczej cząsteczki roju wykorzystywanego przez \emph{MachinePSO}.
+
+\subsubsection*{LanguageProcessor}
+Moduł zawiera klasę \emph{Machine} będącą reprezentacją odtwarzanego automatu, klasę \emph{Alphabet} zawierającą dostępne litery alfabetu wraz z funkcjami ułatwiającymi konwersję ich formatu oraz klasę pomocniczą \emph{Extensions}.
+
+
+\section{Dodatkowe funkcjonalności}
+
+\subsection{Interfejs graficzny}
+Co prawda element ten nie był jeszcze wymagany na tym etapie, jednak został już zaimplementowany, co ułatwia uruchamianie obliczeń. Interfejs jest w pełni responsywny w trakcie trwania obliczeń i pozwala na bieżąco śledzić postępy w poszukiwaniu rozwiązania.
+
+\subsection{Zapisywanie i wczytywanie zbiorów testowych}
+Raz wygenerowane pozwalają znacznie przyspieszyć porównywanie wydajności programu dla różnych parametrów oraz zapewniają, że próby odtwarzania będą dotyczyć dokładnie tego samego automatu.
+
+\subsection{Równoległe wykonywanie obliczeń}
+
+\subsection{Zapisywanie logów}
+
+\section{Zmiany względem I etapu}
+
+\subsection{Reprezentacja automatu w trakcie działania PSO}
 
 \end{document}
