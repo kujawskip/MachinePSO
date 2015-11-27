@@ -33,13 +33,14 @@ namespace UserInterface
             private set { _paramethersValidated = value; NotifyPropertyChanged("ParamethersValidated"); NotifyPropertyChanged("ReadyToStart"); }
         }
 
-        private int ParticleCount;
+        private int ParticleCount,ProgressCount;
         private double VelocityWeight, CognitiveWeight, GlobalWeight;
         private Machine Automaton;
         private TestSets Set;
+        private double DeathChance;
         private bool _testsCreated;
         private bool _paramethersValidated;
-
+        private int MaxStates;
         public bool InputLoaded
         {
             get { return _inputLoaded; }
@@ -88,6 +89,8 @@ namespace UserInterface
         {
             int N;
             double Weight1, Weight2, Weight3;
+            double deathCount;
+            int progress, maxstates;
             bool flag = int.TryParse(ParticleCountTextBox.Text, out N);
             errbuf = "";
             if (!flag) errbuf += " Liczba cząsteczek";
@@ -99,11 +102,21 @@ namespace UserInterface
             if (!flag2) errbuf += " Lokalna Waga";
           bool  flag3 = double.TryParse(GlobalTextBox.Text, out Weight3);
             if (!flag3) errbuf += " Globalna Waga";
-            if (!(flag1 && flag2 && flag3 && flag)) return false;
+            bool flag4 = double.TryParse(DeathTextBox.Text, out deathCount);
+            if (!flag4) errbuf += " Szansa na śmierć cząsteczki";
+            bool flag5 = int.TryParse(ProgressionTextBox.Text, out progress);
+            if (!flag5) errbuf += " Cząstki przekazane do następnej iteracji";
+            bool flag6 = int.TryParse(MaxStateTextBox.Text, out maxstates);
+            if (!flag6) errbuf += " Cząstki przekazane do następnej iteracji";
+            if (!(flag1 && flag2 && flag3 && flag&&flag5&&flag6&&flag4)) return false;
             ParticleCount = N;
             VelocityWeight = Weight1;
             CognitiveWeight = Weight2;
             GlobalWeight = Weight3;
+            ProgressCount = progress;
+            MaxStates = maxstates;
+            DeathChance = deathCount;
+            
             return true;
         }
         public void NotifyPropertyChanged(string propertyName)
@@ -118,10 +131,6 @@ namespace UserInterface
 
         private bool LoadAutomaton()
         {
-
-         //   throw new NotImplementedException();
-            Automaton = Machine.GenerateRandomMachine(4, new Alphabet(new[] {'0', '1', '2'}));
-            //return true;
             OpenFileDialog of = new OpenFileDialog();
             of.Multiselect = false;
             var B = of.ShowDialog();
@@ -149,7 +158,7 @@ namespace UserInterface
             {
                 return false;
             }
-
+            linesInFile = linesInFile.Select(x => x.Replace(" ", "")).ToArray();
             int numberOfStates = int.Parse(linesInFile[0].Split(',')[0]);
             int numberOfAlphabetLetters = int.Parse(linesInFile[0].Split(',')[1]);
 
@@ -165,9 +174,9 @@ namespace UserInterface
             for (int i = 1; i < linesInFile.Length; i++)
             {
                 var line = linesInFile[i].Split(',');
-                var state = int.Parse(line[0]);
-                var input = int.Parse(line[1]);
-                var outstate = int.Parse(line[2]);
+                var state = int.Parse(line[0]) - 1;
+                var input = int.Parse(line[1]) - 1;
+                var outstate = int.Parse(line[2]) - 1;
                 stateFunction[state, input] = outstate;
             }
 
@@ -208,11 +217,16 @@ namespace UserInterface
 
         private void StartPSO()
         {
-            PSO pso = new PSO(VelocityWeight, CognitiveWeight, GlobalWeight, ParticleCount, Set, Automaton);
+            PSO pso = new PSO(VelocityWeight, CognitiveWeight, GlobalWeight, ParticleCount, Set, Automaton,MaxStates,DeathChance,ProgressCount);
             pso.ShowDialog();
             //pso.Show();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        private void DeathTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
     }
 }

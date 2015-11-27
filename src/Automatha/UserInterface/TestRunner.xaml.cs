@@ -63,7 +63,7 @@ namespace UserInterface
     public bool ValidatedParameters { get; private set; }
         private TestSets set;
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void Button_AcceptParams(object sender, RoutedEventArgs e)
         {
             string errbuf;
             ValidatedParameters = ValidateParamethers(out errbuf);
@@ -108,9 +108,9 @@ namespace UserInterface
             ValidatedParameters = false;
         }
 
-        private void Button_Click_2(object sender, RoutedEventArgs e)
+        private void Button_SaveParams(object sender, RoutedEventArgs e)
         {
-            SaveFileDialog of = new SaveFileDialog {Filter = "Pliki testów (.tst) | .tst"};
+            SaveFileDialog of = new SaveFileDialog {Filter = "Pliki testów (*.tst) | *.tst"};
 
             var B = of.ShowDialog();
             if (B.HasValue && B.Value)
@@ -120,7 +120,7 @@ namespace UserInterface
         }
 
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private void Button_LoadParams(object sender, RoutedEventArgs e)
         {
             OpenFileDialog of = new OpenFileDialog
             {
@@ -147,7 +147,7 @@ namespace UserInterface
 
         }
 
-        private void Button_Click_3(object sender, RoutedEventArgs e)
+        private void Button_Generate(object sender, RoutedEventArgs e)
         {
             if (!ValidatedParameters)
             {
@@ -179,7 +179,7 @@ namespace UserInterface
             
         }
 
-        private void Button_Click_4(object sender, RoutedEventArgs e)
+        private void Button_AcceptGenerated(object sender, RoutedEventArgs e)
         {
             DialogResult = true;
             Close();

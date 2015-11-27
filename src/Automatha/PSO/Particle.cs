@@ -7,16 +7,30 @@ using System.Threading.Tasks;
 
 namespace PSO
 {
+    /// <summary>
+    /// Klasa realizująca cząsteczke PSO.
+    /// </summary>
     public class Particle
     {
-        
-        public static double[,] GlobalMax;
-        public static int GlobalError;
+       /// <summary>
+       /// Funkcja przejścia najlepszego globalnie automatu
+       /// </summary>
+        internal static double[,] GlobalMax;
+        /// <summary>
+        /// Błąd najlepszego globalnie automatu
+        /// </summary>
+        internal static int GlobalError;
+
         private static int LastChange;
         private static int MaxChange;
         private static Random random;
-        private static double DeathChance;
-
+        internal static double DeathChance;
+        const double EPS = 0.000000000001;
+        /// <summary>
+        /// Metoda inicjalizuje parametry wspólne dla cząsteczek
+        /// </summary>
+        /// <param name="maxSteps">Maksymalna ilość kroków, po której w razie braku poprawy rozwiązania globalnego przerywane są obliczenia</param>
+        /// <param name="deathChance">Szansa na śmierć cząsteczki w każdym kroku - martwa cząsteczka nie wykonuje obliczeń</param>
         public static void Initialize(int maxSteps, double deathChance=0)
         {
             DeathChance = deathChance;
@@ -25,7 +39,10 @@ namespace PSO
             GlobalError = int.MaxValue;
             random = new Random();
         }
-
+        /// <summary>
+        /// Konstruktor tworzący cząsteczke
+        /// </summary>
+        /// <param name="core">Automat reprezentujący stan początkowy cząsteczki</param>
         public Particle(Machine core)
         {
             LocalError = int.MaxValue;
@@ -36,42 +53,41 @@ namespace PSO
             {
                 for (int j = 0; j < core.alphabet.Letters.Length; j++)
                 {
-                    velocity[i, j] = random.Next(-core.StateCount, core.StateCount) + (random.NextDouble() * 2 - 0.5); //velocity może mieć dowolne wartości, nawet ujemne
+                    velocity[i, j] = random.NextDouble() * 2 * core.StateCount - core.StateCount;//velocity może mieć dowolne wartości, nawet ujemne
                 }
             }
             LocalError = UpdateLocal();
             TryUpdateGlobal();
         }
-
+        /// <summary>
+        /// Metoda potwierdzająca możliwość wykonania kroku przez cząsteczki.
+        /// </summary>
+        /// <returns>Wartość boolean - false oznacza przerwanie iteracji</returns>
         public static bool StartSteps()
         {
             return LastChange != MaxChange;
         }
-
+        /// <summary>
+        /// Metoda realizująca jeden krok cząsteczki w PSO (asynchroniczna)
+        /// </summary>
+        /// <returns>Wartość błędu cząsteczki</returns>
         public async Task<int> Step()
         {
             int actualError = int.MaxValue;
             await Task.Run(() =>
             {
-                //if (random.NextDouble() < DeathChance)
-                //{
-                //    Core = Machine.GenerateRandomMachine(Core.StateCount, Core.alphabet);
-                //    for (int i = 0; i < Core.StateCount; i++)
-                //        for (int j = 0; j < Core.alphabet.Letters.Length; j++)
-                //            velocity[i, j] = random.NextDouble()*random.Next(-Core.StateCount, Core.StateCount);
-                //    Max = Core.GetFunctionCopy();
-                //}
                 for (int i = 0; i < Core.StateCount; i++)
                 {
                     for (int j = 0; j < Core.alphabet.Letters.Length; j++)
                     {
-                        var newv = MachinePSO.Omega * velocity[i, j] +
-                                         MachinePSO.OmegaLocal * random.NextDouble() * (Max[i, j] - Core.stateFunction[i, j]) +
-                                         MachinePSO.OmegaGlobal * random.NextDouble() * (GlobalMax[i, j] - Core.stateFunction[i, j]);
+                        var newv = (MachinePSO.Omega * velocity[i, j]) +
+                                         (MachinePSO.OmegaLocal * random.NextDouble() * (Max[i, j] - Core.stateFunction[i, j])) +
+                                         (MachinePSO.OmegaGlobal * random.NextDouble() * (GlobalMax[i, j] - Core.stateFunction[i, j]));
                         velocity[i, j] = newv;
                         Core.stateFunction[i, j] += velocity[i, j];
                         if (Core.stateFunction[i, j] < 0) Core.stateFunction[i, j] = 0;
-                        if (Core.stateFunction[i, j] > Core.StateCount - 1) Core.stateFunction[i, j] = (double)(Core.StateCount - 1 - double.Epsilon);
+                        if (Core.stateFunction[i, j] > Core.StateCount - EPS)
+                            Core.stateFunction[i, j] = ((double)Core.StateCount - EPS);
                     }
 
                 }
@@ -79,7 +95,10 @@ namespace PSO
             });
             return actualError;
         }
-
+        /// <summary>
+        /// Metoda licząca błąd i aktualizująca najlepszą wartość lokalną
+        /// </summary>
+        /// <returns>Błąd dla danej cząsteczki</returns>
         public int UpdateLocal()
         {
             var actualError = MachinePSO.Words.Sum(WordPair => Core.AreWordsInRelation(WordPair.Item1, WordPair.Item2) == MachinePSO.AreWordsInRelation(WordPair.Item1, WordPair.Item2) ? 0 : 1);
@@ -90,7 +109,9 @@ namespace PSO
             }
             return actualError;
         }
-
+        /// <summary>
+        /// Metoda aktualizująca najlepszą wartość globalną
+        /// </summary>
         public void TryUpdateGlobal()
         {
             if (LocalError < GlobalError)
@@ -100,14 +121,29 @@ namespace PSO
                 GlobalMax = Core.GetFunctionCopy();
             }
         }
+        /// <summary>
+        /// Metoda wywoływana po wykonaniu kroków przez wszystkie cząsteczki. Podwyższa wartość LastChange związaną
+        /// </summary>
         public static void EndStep()
         {
             LastChange++;
         }
 
-        public Machine Core;
-        public double[,] velocity;
-        public double[,] Max;
-        public int LocalError;
+        /// <summary>
+        /// Automat (pozycja w przestrzeni rozwiązań) cząsteczki
+        /// </summary>
+        internal volatile Machine Core;
+        /// <summary>
+        /// Prędkość ruchu cząsteczki
+        /// </summary>
+        internal volatile double[,] velocity;
+        /// <summary>
+        /// Funkcja przejścia najlepszego lokalnie automatu
+        /// </summary>
+        internal volatile double[,] Max;
+        /// <summary>
+        /// Błąd najlepszego lokalnie automatu
+        /// </summary>
+        internal volatile int LocalError;
     }
 }

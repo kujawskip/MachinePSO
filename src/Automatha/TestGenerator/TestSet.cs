@@ -9,20 +9,34 @@ using System.Threading.Tasks;
 
 namespace TestGenerator
 { 
+    /// <summary>
+    /// Klasa opisująca zbiory testowe
+    /// </summary>
     public class TestSets
     {
         private static Tuple<T1,T2> Inverse<T1, T2>(Tuple<T2, T1> t)
         {
             return new Tuple<T1, T2>(t.Item2, t.Item1);
         }
-
+        /// <summary>
+        /// Konstruktor tworzący TestSets
+        /// </summary>
+        /// <param name="testSet">Zbiór testowy</param>
+        /// <param name="controlSet">Zbiór kontrolny</param>
+        /// <param name="m">Automat zawierajacy alfabet testu</param>
         private TestSets(Dictionary<Tuple<int[], int[]>, bool> testSet, Dictionary<Tuple<int[], int[]>, bool> controlSet, Machine m)
         {
             TestSet = testSet;
             ControlSet = controlSet;
             LetterCount = m.LetterCount;
         }
-
+        /// <summary>
+        /// Metoda Ładuje zbiór testowy z pliku
+        /// </summary>
+        /// <param name="path">Ścieżka do pliku</param>
+        /// <param name="m">Automat zawierający informacje o alfabecie</param>
+        /// <param name="sets">Wyjściowy parametr - utworzony zbiór</param>
+        /// <returns>Informacja o pomyślnym załadowaniu automatu</returns>
         public static bool LoadSetFromFile(string path, Machine m, out TestSets sets)
         {
             bool result = false;
@@ -53,7 +67,11 @@ namespace TestGenerator
             }
             return result;
         }
-
+        /// <summary>
+        /// Metoda przetwarza ciąg znaków w zbiór par słów
+        /// </summary>
+        /// <param name="v">łańcuch znaków</param>
+        /// <returns>Słownik zawierający pary słów i ich relacje</returns>
         private static Dictionary<Tuple<int[], int[]>, bool> ParseSets(string v)
         {
             var result = new Dictionary<Tuple<int[], int[]>, bool>();
@@ -75,7 +93,11 @@ namespace TestGenerator
             }
             return result;
         }
-
+        /// <summary>
+        /// Metoda przetwarza słownik w ciąg znaków
+        /// </summary>
+        /// <param name="dict">Słownik do przetworzenia</param>
+        /// <returns>ciąg znaków</returns>
         private static string ConvertToString(Dictionary<Tuple<int[], int[]>, bool> dict)
         {
             var sb = new StringBuilder();
@@ -91,7 +113,11 @@ namespace TestGenerator
             }
             return sb.ToString();
         }
-
+        /// <summary>
+        /// Metoda zapisuje zbiór do pliku
+        /// </summary>
+        /// <param name="path">Ścieżka pliku</param>
+        /// <returns>Informacja o pomyślnym zakończeniu</returns>
         public bool SaveSetToFile(string path)
         {
             bool result = false;
@@ -142,12 +168,25 @@ namespace TestGenerator
         }
 
         int LetterCount;
+        /// <summary>
+        /// Zbiór testowy
+        /// </summary>
         public Dictionary<Tuple<int[], int[]>, bool> TestSet
         { get; private set; }
+        /// <summary>
+        /// Zbiór kontrolny
+        /// </summary>
         public Dictionary<Tuple<int[], int[]>, bool> ControlSet
         { get; private set; }
         Random rand = new Random();
 
+        /// <summary>
+        /// Konstruktor klasy TestSets
+        /// </summary>
+        /// <param name="m">Automat</param>
+        /// <param name="thoroughCount"></param>
+        /// <param name="randomCount"></param>
+        /// <param name="controlCount">Wielkość zbioru kontrolnego</param>
         public TestSets(Machine m, int thoroughCount = 5, int randomCount = 50, int controlCount = 500):this(new Dictionary<Tuple<int[], int[]>, bool>(), new Dictionary<Tuple<int[], int[]>, bool>(), m)
         {
             var shortWords = GenerateAllWords(thoroughCount, m);
@@ -155,6 +194,12 @@ namespace TestGenerator
             GenerateSets(m, controlCount, randomCount, shortWords, concats);
         }
 
+       /// <summary>
+       /// Metoda generuje wszystkie słowa o długości <= parametrowi wordLength
+       /// </summary>
+       /// <param name="wordLength">Długość słów</param>
+       /// <param name="m">Automat</param>
+       /// <returns>Lista wszystkich słów</returns>
         private List<int[]> GenerateAllWords(int wordLength, Machine m)
         {
             var all = new List<int[]> { new int[0] };
@@ -178,9 +223,16 @@ namespace TestGenerator
             }
             return all;
         }
-
+        /// <summary>
+        /// Metoda generuje losowe połączenia słów w celu utworzenia dłuższych słów
+        /// </summary>
+        /// <param name="words">Słowa do łączenia</param>
+        /// <param name="randomCount">Ilość słów</param>
+        /// <param name="m">Automat</param>
+        /// <returns>Lista słów</returns>
         private List<int[]> GenerateRandomConcats(List<int[]> words, int randomCount, Machine m)
         {
+
             var wor = words.Select(x => m.alphabet.Translate(x.ToList())).ToArray();
             var res = new List<string>();
             for (int i=0; i<randomCount; i++)
@@ -190,9 +242,16 @@ namespace TestGenerator
                     w = wor[rand.Next(wor.Length)] + wor[rand.Next(wor.Length)];
                 res.Add(w);
             }
-            return res.Select(x=>m.alphabet.Translate(x).ToArray()).ToList();
+            return res.Select(x => m.alphabet.Translate(x).ToArray()).ToList();
         }
-
+        /// <summary>
+        /// Metoda łączy słowa w pary
+        /// </summary>
+        /// <param name="m">Automat</param>
+        /// <param name="controlCount">Rozmiar zbioru kontrolnego</param>
+        /// <param name="testCount">Rozmiar zbioru testowego</param>
+        /// <param name="shortWords">Lista krótkich słów</param>
+        /// <param name="randomWords">Lista długich słów generowanych losowo</param>
         private void GenerateSets(Machine m, int controlCount, int testCount, List<int[]> shortWords, List<int[]> randomWords)
         {
             var allWords = shortWords.Concat(randomWords).Select(x => m.alphabet.Translate(x.ToList())).ToArray();
@@ -204,26 +263,26 @@ namespace TestGenerator
                     var w1 = m.alphabet.Translate(shortWords[i].ToList());
                     var w2 = m.alphabet.Translate(shortWords[j].ToList());
                     testSetTemp.Add(new Tuple<string, string>(w1, w2), rel);
-                    testSetTemp.Add(new Tuple<string, string>(w2, w1), rel);
+                    //testSetTemp.Add(new Tuple<string, string>(w2, w1), rel);
                 }
             for (int i = 0; i < testCount; i++)
             {
                 var pair = new Tuple<string, string>(null, null);
-                while( pair.Item1 == pair.Item2 || testSetTemp.Keys.Contains(pair))
+                while (pair.Item1 == pair.Item2 || testSetTemp.ContainsKey(pair) || testSetTemp.ContainsKey(Inverse(pair)))
                     pair = new Tuple<string, string>(allWords[rand.Next(allWords.Length)], allWords[rand.Next(allWords.Length)]);
                 var rel = m.AreWordsInRelation(pair.Item1, pair.Item2);
                 testSetTemp.Add(pair, rel);
-                testSetTemp.Add(Inverse(pair), rel);
+                //testSetTemp.Add(Inverse(pair), rel);
             }
             var controlSetTemp = new Dictionary<Tuple<string, string>, bool>();
             for (int i = 0; i < controlCount; i++)
             {
                 var pair = new Tuple<string, string>(null, null);
-                while (pair.Item1 == pair.Item2 || testSetTemp.Keys.Contains(pair) || controlSetTemp.Keys.Contains(pair))
+                while (pair.Item1 == pair.Item2 || testSetTemp.ContainsKey(pair) || testSetTemp.ContainsKey(Inverse(pair)) || controlSetTemp.ContainsKey(pair) || controlSetTemp.ContainsKey(Inverse(pair)))
                     pair = new Tuple<string, string>(allWords[rand.Next(allWords.Length)], allWords[rand.Next(allWords.Length)]);
                 var rel = m.AreWordsInRelation(pair.Item1, pair.Item2);
                 controlSetTemp.Add(pair, rel);
-                controlSetTemp.Add(Inverse(pair), rel);
+                //controlSetTemp.Add(Inverse(pair), rel);
             }
             foreach(var keyVal in testSetTemp)
             {
