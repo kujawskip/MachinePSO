@@ -63,22 +63,55 @@ namespace UserInterface
         }
         private int state = 2;
 
+        public void UpdateResultTable()
+        {
+            ModifableGrid.Children.Clear();
+            ModifableGrid.Children.Add(GenerateMachineRepresentation(MachinePSO.BestMachine));
+        }
+
+        public Grid GenerateMachineRepresentation(Machine m)
+        {
+            var g = new Grid();
+            for(int i=0; i<=m.StateCount; i++)
+            {
+                g.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
+                if (i == 0) continue;
+                var stateLabel = new Label() { Content = i, Margin = new Thickness(4), FontWeight=FontWeights.Bold };
+                g.Children.Add(stateLabel);
+                Grid.SetColumn(stateLabel, 0);
+                Grid.SetRow(stateLabel, i);
+            }
+            for (int i = 0; i <= m.LetterCount; i++)
+            {
+                g.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto });
+                if (i == 0) continue;
+                var letterLabel = new Label() { Content = m.alphabet[i - 1], Margin=new Thickness(4), FontStyle=FontStyles.Italic };
+                g.Children.Add(letterLabel);
+                Grid.SetColumn(letterLabel, i);
+                Grid.SetRow(letterLabel, 0);
+            }
+            for (int state = 0; state < m.StateCount; state++)
+                for (int letter = 0; letter < m.LetterCount; letter++)
+                {
+                    var label = new Label() { Content = (int)m.stateFunction[state, letter] + 1, Margin = new Thickness(4) };
+                    g.Children.Add(label);
+                    Grid.SetColumn(label, letter + 1);
+                    Grid.SetRow(label, state + 1);
+                }
+
+            return g;
+        }
+
         bool ClosingRequested = false;
+        Task<bool> iteration;
         private async void StartPSO()
         {
             int state = State;
             int pCount = ParticleCount;
-            //bool inProgress = true;
-            //Task update = Task.Factory.StartNew(async () =>
-            //{
-            //    while (inProgress)
-            //    {
-            //        await Task.Delay(TimeSpan.FromSeconds(1));
-            //        NotifyPropertyChanged("BestError");
-            //    }
-            //    NotifyPropertyChanged("BestError");
-            //});
-            while (await Task.Run(async () => await MachinePSO.Iterate(state, pCount)))
+            PropertyChanged += PSO_PropertyChanged;
+            for (iteration = Task.Run(async () => await MachinePSO.Iterate(state, pCount));
+                await iteration; 
+                iteration = Task.Run(async () => await MachinePSO.Iterate(state, pCount)))
             {
                 NotifyPropertyChanged("BestError");
                 State++;
@@ -86,15 +119,25 @@ namespace UserInterface
                 if (ClosingRequested)
                     return;
             }
-            //inProgress = false;
-            //await update;
+            PropertyChanged -= PSO_PropertyChanged;
             MessageBox.Show("Calculation finished", "Message", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void PSO_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if(e.PropertyName=="BestError")
+            {
+                UpdateResultTable();
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
+            var msg = Task.Run(() => MessageBox.Show("Trwa zamykanie", "Message", MessageBoxButton.OK, MessageBoxImage.Information));
+            var iter = Task.Run(() => iteration.Wait());
+            Task.WaitAll(new Task[] { msg, iter });
             ClosingRequested = true;
         }
     }
