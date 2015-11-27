@@ -14,7 +14,7 @@ namespace PSO
         public static List<Tuple<int[], int[]>> Words;
         private static LanguageRelation relation;
         public static Machine BestMachine;
-        public static int BestError;
+        public static volatile int BestError;
         private static Alphabet alphabet;
         private static int MaxStates;
         private static List<Particle> Particles;

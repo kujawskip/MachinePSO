@@ -118,10 +118,6 @@ namespace UserInterface
 
         private bool LoadAutomaton()
         {
-
-         //   throw new NotImplementedException();
-            Automaton = Machine.GenerateRandomMachine(4, new Alphabet(new[] {'0', '1', '2'}));
-            //return true;
             OpenFileDialog of = new OpenFileDialog();
             of.Multiselect = false;
             var B = of.ShowDialog();
@@ -149,7 +145,7 @@ namespace UserInterface
             {
                 return false;
             }
-
+            linesInFile = linesInFile.Select(x => x.Replace(" ", "")).ToArray();
             int numberOfStates = int.Parse(linesInFile[0].Split(',')[0]);
             int numberOfAlphabetLetters = int.Parse(linesInFile[0].Split(',')[1]);
 
@@ -165,9 +161,9 @@ namespace UserInterface
             for (int i = 1; i < linesInFile.Length; i++)
             {
                 var line = linesInFile[i].Split(',');
-                var state = int.Parse(line[0]);
-                var input = int.Parse(line[1]);
-                var outstate = int.Parse(line[2]);
+                var state = int.Parse(line[0]) - 1;
+                var input = int.Parse(line[1]) - 1;
+                var outstate = int.Parse(line[2]) - 1;
                 stateFunction[state, input] = outstate;
             }
 
