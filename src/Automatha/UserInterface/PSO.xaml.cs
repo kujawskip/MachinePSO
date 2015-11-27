@@ -56,10 +56,14 @@ namespace UserInterface
                 NotifyPropertyChanged("State");
             }
         }
-        
+
         public float BestError
         {
-            get { return MachinePSO.BestError==int.MaxValue? 100 : 100*(float)MachinePSO.BestError/(float)TestCount; }
+            get { return MachinePSO.BestError == int.MaxValue ? 100 : 100f * (float)MachinePSO.BestError / TestCount; }
+        }
+        public float BestErrorAbsolute
+        {
+            get { return MachinePSO.BestError; }
         }
         private int state = 2;
 
@@ -93,7 +97,7 @@ namespace UserInterface
             for (int state = 0; state < m.StateCount; state++)
                 for (int letter = 0; letter < m.LetterCount; letter++)
                 {
-                    var label = new Label() { Content = (int)m.stateFunction[state, letter] + 1, Margin = new Thickness(4) };
+                    var label = new Label() { Content = m.stateFunction[state, letter] + 1.0, Margin = new Thickness(4) };
                     g.Children.Add(label);
                     Grid.SetColumn(label, letter + 1);
                     Grid.SetRow(label, state + 1);
@@ -109,17 +113,34 @@ namespace UserInterface
             int state = State;
             int pCount = ParticleCount;
             PropertyChanged += PSO_PropertyChanged;
+            bool stillWorking = true;
+            var t = Task.Factory.StartNew(async () =>
+            {
+                var lastError = BestError;
+                while (stillWorking)
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(1));
+                    if (BestError != lastError)
+                    {
+                        NotifyPropertyChanged("BestError");
+                        NotifyPropertyChanged("BestErrorAbsolute");
+                    }
+                }
+            });
             for (iteration = Task.Run(async () => await MachinePSO.Iterate(state, pCount));
                 await iteration; 
                 iteration = Task.Run(async () => await MachinePSO.Iterate(state, pCount)))
             {
                 NotifyPropertyChanged("BestError");
+                NotifyPropertyChanged("BestErrorAbsolute");
                 State++;
                 state = State;
                 if (ClosingRequested)
                     return;
             }
             PropertyChanged -= PSO_PropertyChanged;
+            stillWorking = false;
+            await t;
             MessageBox.Show("Calculation finished", "Message", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
@@ -136,7 +157,7 @@ namespace UserInterface
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             var msg = Task.Run(() => MessageBox.Show("Trwa zamykanie", "Message", MessageBoxButton.OK, MessageBoxImage.Information));
-            var iter = Task.Run(() => iteration.Wait());
+            var iter = Task.Run(() => { if (iteration != null) iteration.Wait(); });
             Task.WaitAll(new Task[] { msg, iter });
             ClosingRequested = true;
         }

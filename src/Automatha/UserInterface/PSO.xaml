@@ -8,6 +8,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -18,9 +19,11 @@
         <TextBlock Grid.Row ="0" Grid.Column="1" Text="{Binding ParticleCount}" Margin="4"/>
         <TextBlock Grid.Row ="1" Grid.ColumnSpan="4" Margin="4">Ilość stanów: </TextBlock>
         <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding State}" Margin="4"/>
-        <TextBlock Grid.Row ="2" Margin="4">Minimalny Błąd (%):</TextBlock>
-        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding BestError}" Margin="4"/>
-        <Grid Name="ModifableGrid" Grid.Row="3" Grid.Column="0" Grid.RowSpan="9" Grid.ColumnSpan="7" Margin="4"/>
+        <TextBlock Grid.Row ="3" Margin="4">% Błędnie przetworzonych:</TextBlock>
+        <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding BestError}" Margin="4"/>
+        <TextBlock Grid.Row ="2" Margin="4">Błędnie przetworzone słowa:</TextBlock>
+        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding BestErrorAbsolute}" Margin="4"/>
+        <Grid Name="ModifableGrid" Grid.Row="4" Grid.Column="0" Grid.RowSpan="9" Grid.ColumnSpan="7" Margin="4" MinHeight="10"/>
             <!--<Grid Name="StaticGrid" Grid.Row="6" Grid.Column="8" Grid.RowSpan="9" Grid.ColumnSpan="7"></Grid>-->
         <Button Grid.Column="2" Name="StartButton" Click="ButtonBase_OnClick" Margin="4" Padding="4">Start</Button>
 

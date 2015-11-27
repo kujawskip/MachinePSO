@@ -59,8 +59,8 @@ namespace PSO
             if (State > MaxStates) return false;
             int ProgressCount = (int)(ProgressRatio * ParticlesCount);
             int RandomCount = ParticlesCount - ProgressCount;
-            Particle.Initialize(MaxSteps);
-            //Particle.Initialize(MaxSteps, 0.009);
+            //Particle.Initialize(MaxSteps);
+            Particle.Initialize(MaxSteps, 0.009);
             List<Machine> machines = new List<Machine>();
 
             machines.AddRange(BestMachine.GetMachinesWithMoreStates(ProgressCount, State - BestMachine.StateCount));
