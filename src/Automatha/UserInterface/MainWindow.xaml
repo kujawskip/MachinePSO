@@ -42,19 +42,19 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <TextBlock HorizontalAlignment="Right" Margin="4">Ilosc czasteczek:</TextBlock>
+                <TextBlock HorizontalAlignment="Right" Margin="4">Liczba cząsteczek:</TextBlock>
                 <TextBox Grid.Column="1" Name="ParticleCountTextBox" Style="{StaticResource TextBoxStyle}" MinWidth="50" Margin="4">25</TextBox>
                 <TextBlock HorizontalAlignment="Right" Margin="4" Grid.Row="1">Waga prędkości:</TextBlock>
                 <TextBox Grid.Row="1" Grid.Column="1" Name="VelocityTextBox" Style="{StaticResource TextBoxStyle}" MinWidth="50" Margin="4">1</TextBox>
-                <TextBlock Grid.Row="2" Margin="4" HorizontalAlignment="Right">Waga lokalna</TextBlock>
+                <TextBlock Grid.Row="2" Margin="4" HorizontalAlignment="Right">Waga lokalna:</TextBlock>
                 <TextBox Grid.Row="2" Grid.Column="1" Name="LocalTextBox" Style="{StaticResource TextBoxStyle}" MinWidth="50" Margin="4">1</TextBox>
-                <TextBlock Grid.Row="3" Margin="4" HorizontalAlignment="Right">Waga Globalna:</TextBlock>
+                <TextBlock Grid.Row="3" Margin="4" HorizontalAlignment="Right">Waga globalna:</TextBlock>
                 <TextBox Grid.Row="3" Grid.Column="1" Style="{StaticResource TextBoxStyle}" Name="GlobalTextBox" MinWidth="50" Margin="4">1</TextBox>
-                <TextBlock Grid.Row="4" Margin="4" HorizontalAlignment="Right">Szansa śmierci komórki:</TextBlock>
+                <TextBlock Grid.Row="4" Margin="4" HorizontalAlignment="Right">Szansa śmierci cząsteczki:</TextBlock>
                 <TextBox Grid.Row="4" Grid.Column="1" Style="{StaticResource TextBoxStyle}" Name="DeathTextBox" MinWidth="50" Margin="4" TextChanged="DeathTextBox_TextChanged">0,003</TextBox>
-                <TextBlock Grid.Row="5" Margin="4" HorizontalAlignment="Right" Text="Cząstki przekazane do następnej iteracji"/>
+                <TextBlock Grid.Row="5" Margin="4" HorizontalAlignment="Right" Text="Cząsteczki przekazane do następnej iteracji:"/>
                 <TextBox Grid.Row="5" Grid.Column="1" Style="{StaticResource TextBoxStyle}" Name="ProgressionTextBox" MinWidth="50" Margin="4">5</TextBox>
-                <TextBlock Grid.Row="6" Margin="4" HorizontalAlignment="Right" Text="Maksymalna liczba stanów"/>
+                <TextBlock Grid.Row="6" Margin="4" HorizontalAlignment="Right" Text="Maksymalna liczba stanów:"/>
                 <TextBox Grid.Row="6" Grid.Column="1" Style="{StaticResource TextBoxStyle}" Name="MaxStateTextBox" MinWidth="50" Margin="4">15</TextBox>
             </Grid>
         </GroupBox>

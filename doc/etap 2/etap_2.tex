@@ -35,13 +35,25 @@ Moduł zawiera klasę \emph{MachinePSO} zawierającą główną pętlę algorytm
 Moduł zawiera klasę \emph{Machine} będącą reprezentacją odtwarzanego automatu, klasę \emph{Alphabet} zawierającą dostępne litery alfabetu wraz z funkcjami ułatwiającymi konwersję ich formatu oraz klasę pomocniczą \emph{Extensions}.
 
 \section{Interfejs użytkownika}
-Po uruchomieniu programu możliwa jest modyfikacja głównych parametrów obliczeń. Należy je zatwierdzić przyciskiem \emph{Zatwierdź Parametry}. Następnie należy kliknąć przycisk \emph{Wczytaj automat}. Pokaże się okno wyboru pliku, w którym należy wskazać plik w zdefiniowanym w zadaniu formacie. Po wczytaniu pliku należy kliknąć przycisk \emph{Generuj zbiory}.
+Po uruchomieniu programu możliwa jest modyfikacja głównych parametrów obliczeń. Oprócz podstawowych parametrów dokładniej opisanych w dokumencie z I etapu obecne są także dwa dodatkowe:
 
-Pojawi się nowe okno umożliwiające albo wczytanie wygenerowanych wcześniej testów z pliku albo wygenerowanie nowych zbiorów testowych i treningowych. Podczas generowania zbiorów testowych można ustalić parametry: 
 \begin{itemize}
-\item Losowe Testy -- rozmiar zbioru treningowego
+\item Szansa śmierci cząsteczki -- cząsteczka z podanym prawdopodobieństwem umrze i zostanie zastąpiona nową, losową cząsteczką
+\item Cząsteczki przekazane do następnej iteracji -- liczba cząsteczek z $n$-tej iteracji, które zostaną przekazane do $n+1$-szej iteracji, gdzie $n$, to liczba stanów poszukiwanego automatu
+\end{itemize}
+
+Parametry należy zatwierdzić przyciskiem \emph{Zatwierdź Parametry}. Następnie należy kliknąć przycisk \emph{Wczytaj automat}. Pokaże się okno wyboru pliku, w którym należy wskazać plik w zdefiniowanym w zadaniu formacie. Po wczytaniu pliku należy kliknąć przycisk \emph{Generuj zbiory}.
+
+Pojawi się nowe okno umożliwiające albo wczytanie wygenerowanych wcześniej testów z pliku albo wygenerowanie nowych zbiorów testowych i treningowych.
+
+\newpage
+
+ Podczas generowania zbiorów testowych można ustalić parametry:
+
+\begin{itemize}
+\item Losowe Testy -- liczba losowych słów dłuższych niż parametr \emph{Dokładne próby}
 \item Dokładne próby -- zostaną wygenerowane wszystkie słowa o długości $<=$ od podanego parametru
-\item Grupa Kontrolna -- rozmiar zbioru testowego (kontrolnego)
+\item Grupa Kontrolna -- rozmiar zbioru par dłuższych słów, nie bioracych udziału w procesie optymalizacji w trakcie trwanis PSO
 \end{itemize}
 
 Po wygenerowaniu zbiorów lub wczytaniu ich z pliku, należy nacisnąć przycisk \emph{Akceptuj}. Po powrocie do głównego okna programu, aktywny staje się przycisk \emph{Rozpocznij PSO}; jego kliknięcie powoduje pojawienie się nowego okna, w którym można rozpocząć obliczenia. Aby to zrobić, należy kliknąć przycisk \emph{Start}. W trakcie trwania obliczeń można śledzić ich postęp. Po zakończeniu działania algorytmu pojawi się okno z komunikatem. Następnie można zapisać logi z obliczeń za pomocą przycisku \emph{Stwórz log}.
