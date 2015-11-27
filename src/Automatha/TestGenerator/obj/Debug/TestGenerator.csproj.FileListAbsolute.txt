@@ -1,9 +1,0 @@
-C:\Users\Patryk\MachinePSO\src\Automatha\TestGenerator\bin\Debug\TestGenerator.dll
-C:\Users\Patryk\MachinePSO\src\Automatha\TestGenerator\bin\Debug\TestGenerator.pdb
-C:\Users\Patryk\MachinePSO\src\Automatha\TestGenerator\bin\Debug\LanguageProcessor.dll
-C:\Users\Patryk\MachinePSO\src\Automatha\TestGenerator\bin\Debug\LanguageProcessor.pdb
-C:\Users\Patryk\MachinePSO\src\Automatha\TestGenerator\obj\Debug\TestGenerator.csprojResolveAssemblyReference.cache
-C:\Users\Patryk\MachinePSO\src\Automatha\TestGenerator\obj\Debug\TestGenerator.Properties.Resources.resources
-C:\Users\Patryk\MachinePSO\src\Automatha\TestGenerator\obj\Debug\TestGenerator.csproj.GenerateResource.Cache
-C:\Users\Patryk\MachinePSO\src\Automatha\TestGenerator\obj\Debug\TestGenerator.dll
-C:\Users\Patryk\MachinePSO\src\Automatha\TestGenerator\obj\Debug\TestGenerator.pdb

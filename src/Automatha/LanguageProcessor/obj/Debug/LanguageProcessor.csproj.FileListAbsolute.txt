@@ -1,5 +1,0 @@
-C:\Users\Patryk\MachinePSO\src\Automatha\LanguageProcessor\bin\Debug\LanguageProcessor.dll
-C:\Users\Patryk\MachinePSO\src\Automatha\LanguageProcessor\bin\Debug\LanguageProcessor.pdb
-C:\Users\Patryk\MachinePSO\src\Automatha\LanguageProcessor\obj\Debug\LanguageProcessor.csprojResolveAssemblyReference.cache
-C:\Users\Patryk\MachinePSO\src\Automatha\LanguageProcessor\obj\Debug\LanguageProcessor.dll
-C:\Users\Patryk\MachinePSO\src\Automatha\LanguageProcessor\obj\Debug\LanguageProcessor.pdb

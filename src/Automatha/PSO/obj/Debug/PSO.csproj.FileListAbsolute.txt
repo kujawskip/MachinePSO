@@ -1,7 +1,0 @@
-C:\Users\Patryk\MachinePSO\src\Automatha\PSO\bin\Debug\PSO.dll
-C:\Users\Patryk\MachinePSO\src\Automatha\PSO\bin\Debug\PSO.pdb
-C:\Users\Patryk\MachinePSO\src\Automatha\PSO\bin\Debug\LanguageProcessor.dll
-C:\Users\Patryk\MachinePSO\src\Automatha\PSO\bin\Debug\LanguageProcessor.pdb
-C:\Users\Patryk\MachinePSO\src\Automatha\PSO\obj\Debug\PSO.csprojResolveAssemblyReference.cache
-C:\Users\Patryk\MachinePSO\src\Automatha\PSO\obj\Debug\PSO.dll
-C:\Users\Patryk\MachinePSO\src\Automatha\PSO\obj\Debug\PSO.pdb
