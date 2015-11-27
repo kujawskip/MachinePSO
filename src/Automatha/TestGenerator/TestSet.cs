@@ -53,7 +53,7 @@ namespace TestGenerator
                     var controlSet = ParseSets(localSets[1]);
 
                     if (testSet.Keys.Any(x => x.Item1.Any(i => i >= m.LetterCount || i < 0) || x.Item2.Any(i => i >= m.LetterCount || i < 0)))
-                        throw new ArgumentException("Alphabets of the machine and file does not match");
+                        throw new ArgumentException("Alphabets of the machine and file do not match");
 
                     sets = new TestSets(testSet, controlSet, m);
                     result = true;

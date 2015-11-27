@@ -169,14 +169,18 @@ namespace UserInterface
 
 
             stateFunction = new double[numberOfStates, numberOfAlphabetLetters];
-
-            //var alphabet = new Alphabet(alphabetSymbols);
+            List<string> Numerals = new List<string>();
             for (int i = 1; i < linesInFile.Length; i++)
             {
-                var line = linesInFile[i].Split(',');
-                var state = int.Parse(line[0]) - 1;
-                var input = int.Parse(line[1]) - 1;
-                var outstate = int.Parse(line[2]) - 1;
+                Numerals.AddRange(linesInFile[i].Split(','));
+            }
+            //var alphabet = new Alphabet(alphabetSymbols);
+            for (int i = 0; i < Numerals.Count; i+=3)
+            {
+                
+                var state = int.Parse(Numerals[i]) - 1;
+                var input = int.Parse(Numerals[i+1]) - 1;
+                var outstate = int.Parse(Numerals[i+2]) - 1;
                 stateFunction[state, input] = outstate;
             }
 
