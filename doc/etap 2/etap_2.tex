@@ -34,6 +34,17 @@ Moduł zawiera klasę \emph{MachinePSO} zawierającą główną pętlę algorytm
 \subsubsection*{LanguageProcessor}
 Moduł zawiera klasę \emph{Machine} będącą reprezentacją odtwarzanego automatu, klasę \emph{Alphabet} zawierającą dostępne litery alfabetu wraz z funkcjami ułatwiającymi konwersję ich formatu oraz klasę pomocniczą \emph{Extensions}.
 
+\section{Interfejs użytkownika}
+Po uruchomieniu programu możliwa jest modyfikacja głównych parametrów obliczeń. Należy je zatwierdzić przyciskiem \emph{Zatwierdź Parametry}. Następnie należy kliknąć przycisk \emph{Wczytaj automat}. Pokaże się okno wyboru pliku, w którym należy wskazać plik w zdefiniowanym w zadaniu formacie. Po wczytaniu pliku należy kliknąć przycisk \emph{Generuj zbiory}.
+
+Pojawi się nowe okno umożliwiające albo wczytanie wygenerowanych wcześniej testów z pliku albo wygenerowanie nowych zbiorów testowych i treningowych. Podczas generowania zbiorów testowych można ustalić parametry: 
+\begin{itemize}
+\item Losowe Testy -- rozmiar zbioru treningowego
+\item Dokładne próby -- zostaną wygenerowane wszystkie słowa o długości $<=$ od podanego parametru
+\item Grupa Kontrolna -- rozmiar zbioru testowego (kontrolnego)
+\end{itemize}
+
+Po wygenerowaniu zbiorów lub wczytaniu ich z pliku, należy nacisnąć przycisk \emph{Akceptuj}. Po powrocie do głównego okna programu, aktywny staje się przycisk \emph{Rozpocznij PSO}; jego kliknięcie powoduje pojawienie się nowego okna, w którym można rozpocząć obliczenia. Aby to zrobić, należy kliknąć przycisk \emph{Start}. W trakcie trwania obliczeń można śledzić ich postęp. Po zakończeniu działania algorytmu pojawi się okno z komunikatem. Następnie można zapisać logi z obliczeń za pomocą przycisku \emph{Stwórz log}.
 
 \section{Dodatkowe funkcjonalności}
 
@@ -44,11 +55,17 @@ Co prawda element ten nie był jeszcze wymagany na tym etapie, jednak został ju
 Raz wygenerowane pozwalają znacznie przyspieszyć porównywanie wydajności programu dla różnych parametrów oraz zapewniają, że próby odtwarzania będą dotyczyć dokładnie tego samego automatu.
 
 \subsection{Równoległe wykonywanie obliczeń}
+Główna pętla programu została zaimplementowana z wykorzystaniem wątków za pomocą dostępnej w $C\#$ klasy $Task$.
 
 \subsection{Zapisywanie logów}
+Po wykonaniu obliczeń możliwe jest zapisanie do pliku pełnego logu zawierającego wyniki dla każdej testowanej pary słów.
 
 \section{Zmiany względem I etapu}
 
 \subsection{Reprezentacja automatu w trakcie działania PSO}
+
+W części opisującej działanie algorytmu, w dokumencie z poprzedniego etapu, planowaliśmy reprezentować automat jako macierz zmiennopozycyjnych liczb. Macierz ta miała mieć zaokrąglane wartości do liczb całkowitych i na jej podstawie miał być konstruowany automat, za pomocą którego obliczana byłaby wartość funkcji błędu.
+
+Zdecydowaliśmy się jednak wprowadzić usprawnienie polegające na tym, że cząsteczka posiada automat reprezentowany przez macierz z liczbami zmiennopozycyjnymi, a są one zaokrąglanie do liczb całkowitych tylko w momencie przeprowadzania obliczenia na automacie. Dzięki temu uniknęliśmy kosztownego tworzenia nowych obiektów automatów, a w szczególności kopiowania macierzy z wartościami. Teraz obliczenia odbywają się ,,w miejscu'' z perspektywy pamięci.
 
 \end{document}
