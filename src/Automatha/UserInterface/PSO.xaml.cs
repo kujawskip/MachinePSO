@@ -16,6 +16,9 @@ using LanguageProcessor;
 using PSO;
 using TestGenerator;
 using System.Threading;
+using Microsoft.Win32;
+using System.IO;
+using System.Diagnostics;
 
 namespace UserInterface
 {
@@ -40,11 +43,23 @@ namespace UserInterface
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
-        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+
+        private void StartPSO_Click(object sender, RoutedEventArgs e)
         {
             StartButton.Visibility = Visibility.Collapsed;
             StartButton.IsEnabled = false;
             StartPSO();
+        }
+
+        Visibility logVisible = Visibility.Hidden;
+        public Visibility LogVisible
+        {
+            get { return logVisible; }
+            set
+            {
+                logVisible = value;
+                NotifyPropertyChanged("LogVisible");
+            }
         }
 
         public int State
@@ -89,7 +104,7 @@ namespace UserInterface
             {
                 g.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto });
                 if (i == 0) continue;
-                var letterLabel = new Label() { Content = m.alphabet[i - 1], Margin=new Thickness(4), FontStyle=FontStyles.Italic };
+                var letterLabel = new Label() { Content = m.alphabet[i - 1], Margin = new Thickness(4), FontStyle = FontStyles.Italic };
                 g.Children.Add(letterLabel);
                 Grid.SetColumn(letterLabel, i);
                 Grid.SetRow(letterLabel, 0);
@@ -97,12 +112,11 @@ namespace UserInterface
             for (int state = 0; state < m.StateCount; state++)
                 for (int letter = 0; letter < m.LetterCount; letter++)
                 {
-                    var label = new Label() { Content = m.stateFunction[state, letter] + 1.0, Margin = new Thickness(4) };
+                    var label = new Label() { Content = (int)m.stateFunction[state, letter] + 1.0, Margin = new Thickness(4) };
                     g.Children.Add(label);
                     Grid.SetColumn(label, letter + 1);
                     Grid.SetRow(label, state + 1);
                 }
-
             return g;
         }
 
@@ -131,17 +145,24 @@ namespace UserInterface
                 await iteration; 
                 iteration = Task.Run(async () => await MachinePSO.Iterate(state, pCount)))
             {
+                PropertyChanged -= PSO_PropertyChanged;
                 NotifyPropertyChanged("BestError");
                 NotifyPropertyChanged("BestErrorAbsolute");
+                UpdateResultTable();
+                PropertyChanged += PSO_PropertyChanged;
                 State++;
                 state = State;
                 if (ClosingRequested)
+                {
+                    PropertyChanged -= PSO_PropertyChanged;
                     return;
+                }
             }
             PropertyChanged -= PSO_PropertyChanged;
             stillWorking = false;
             await t;
             MessageBox.Show("Calculation finished", "Message", MessageBoxButton.OK, MessageBoxImage.Information);
+            LogVisible = Visibility.Visible;
         }
 
         private void PSO_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -156,10 +177,47 @@ namespace UserInterface
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
+            ClosingRequested = true;
             var msg = Task.Run(() => MessageBox.Show("Trwa zamykanie", "Message", MessageBoxButton.OK, MessageBoxImage.Information));
             var iter = Task.Run(() => { if (iteration != null) iteration.Wait(); });
             Task.WaitAll(new Task[] { msg, iter });
-            ClosingRequested = true;
+        }
+
+        private void CreateLog_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog of = new SaveFileDialog { Filter = "Pliki testów (*.txt) | *.txt" };
+            var B = of.ShowDialog();
+            if (B.HasValue && B.Value)
+            {
+                CreateLog(of.FileName);
+            }
+        }
+
+        private void CreateLog(string fileName)
+        {
+
+            try
+            {
+                using (var writer = new StreamWriter(fileName, false, Encoding.UTF8))
+                {
+                    var sb = new StringBuilder();
+                    foreach (var keyVal in MachinePSO.Words)
+                    {
+                        var w1 = MachinePSO.BestMachine.alphabet.Translate(keyVal.Item1.ToList());
+                        var w2 = MachinePSO.BestMachine.alphabet.Translate(keyVal.Item2.ToList());
+                        var rel1 = MachinePSO.BestMachine.AreWordsInRelation(keyVal.Item1, keyVal.Item2);
+                        var rel2 = MachinePSO.AreWordsInRelation(keyVal.Item1, keyVal.Item2);
+                        sb.AppendFormat("{0}Obliczone {1}\n--{2}\n--{3}\n\n", rel1 == rel2 ? "" : ">", rel1 == rel2 ? "dobrze" : "źle", w1, w2);
+                    }
+                    //sb.AppendFormat("{0}\n--{1}\n--{2}\n\n");
+                    writer.Write(sb.ToString());
+
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
+            }
         }
     }
 }

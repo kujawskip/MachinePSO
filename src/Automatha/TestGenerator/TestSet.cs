@@ -190,7 +190,7 @@ namespace TestGenerator
                     w = wor[rand.Next(wor.Length)] + wor[rand.Next(wor.Length)];
                 res.Add(w);
             }
-            return res.Select(x=>m.alphabet.Translate(x).ToArray()).ToList();
+            return res.Select(x => m.alphabet.Translate(x).ToArray()).ToList();
         }
 
         private void GenerateSets(Machine m, int controlCount, int testCount, List<int[]> shortWords, List<int[]> randomWords)
@@ -204,26 +204,26 @@ namespace TestGenerator
                     var w1 = m.alphabet.Translate(shortWords[i].ToList());
                     var w2 = m.alphabet.Translate(shortWords[j].ToList());
                     testSetTemp.Add(new Tuple<string, string>(w1, w2), rel);
-                    testSetTemp.Add(new Tuple<string, string>(w2, w1), rel);
+                    //testSetTemp.Add(new Tuple<string, string>(w2, w1), rel);
                 }
             for (int i = 0; i < testCount; i++)
             {
                 var pair = new Tuple<string, string>(null, null);
-                while( pair.Item1 == pair.Item2 || testSetTemp.Keys.Contains(pair))
+                while (pair.Item1 == pair.Item2 || testSetTemp.ContainsKey(pair) || testSetTemp.ContainsKey(Inverse(pair)))
                     pair = new Tuple<string, string>(allWords[rand.Next(allWords.Length)], allWords[rand.Next(allWords.Length)]);
                 var rel = m.AreWordsInRelation(pair.Item1, pair.Item2);
                 testSetTemp.Add(pair, rel);
-                testSetTemp.Add(Inverse(pair), rel);
+                //testSetTemp.Add(Inverse(pair), rel);
             }
             var controlSetTemp = new Dictionary<Tuple<string, string>, bool>();
             for (int i = 0; i < controlCount; i++)
             {
                 var pair = new Tuple<string, string>(null, null);
-                while (pair.Item1 == pair.Item2 || testSetTemp.Keys.Contains(pair) || controlSetTemp.Keys.Contains(pair))
+                while (pair.Item1 == pair.Item2 || testSetTemp.ContainsKey(pair) || testSetTemp.ContainsKey(Inverse(pair)) || controlSetTemp.ContainsKey(pair) || controlSetTemp.ContainsKey(Inverse(pair)))
                     pair = new Tuple<string, string>(allWords[rand.Next(allWords.Length)], allWords[rand.Next(allWords.Length)]);
                 var rel = m.AreWordsInRelation(pair.Item1, pair.Item2);
                 controlSetTemp.Add(pair, rel);
-                controlSetTemp.Add(Inverse(pair), rel);
+                //controlSetTemp.Add(Inverse(pair), rel);
             }
             foreach(var keyVal in testSetTemp)
             {
