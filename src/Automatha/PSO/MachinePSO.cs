@@ -42,6 +42,11 @@ namespace PSO
 
         public static int PerformTest(Dictionary<Tuple<int[], int[]>, bool> set, out double percentage)
         {
+            if (set.Count == 0)
+            {
+                percentage = 0;
+                return 0;
+            }
             int err = 0;
             foreach (var key in set.Keys)
             {
