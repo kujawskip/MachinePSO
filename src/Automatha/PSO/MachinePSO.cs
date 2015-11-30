@@ -39,6 +39,18 @@ namespace PSO
         private static List<Particle> Particles;
         public static double Omega, OmegaLocal, OmegaGlobal;
         private static Random random = new Random();
+
+        public static int PerformTest(Dictionary<Tuple<int[], int[]>, bool> set, out double percentage)
+        {
+            int err = 0;
+            foreach (var key in set.Keys)
+            {
+                if (set[key] != BestMachine.AreWordsInRelation(key.Item1, key.Item2)) err++;
+            }
+            percentage = 100 * (double)err / set.Count;
+            return err;
+        }
+
         /// <summary>
         /// Metoda inicjalizująca parametry PSO
         /// </summary>
