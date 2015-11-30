@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TestGenerator;
 
 namespace PSO
 {
@@ -95,13 +96,29 @@ namespace PSO
             });
             return actualError;
         }
+        private int GetBetterError()
+        {
+            Dictionary<int[], int> FinishedStates = new Dictionary<int[], int>(new TestSets.WordEqualityComparer());
+            foreach (var word in MachinePSO.AllWords)
+            {
+                FinishedStates.Add(word, Core.GetFinishedState(word.ToList()));
+            }
+            int i = 0;
+            foreach (var WordPair in MachinePSO.Words)
+            {
+                var rel = FinishedStates[WordPair.Item1] == FinishedStates[WordPair.Item2];
+                i += rel == MachinePSO.AreWordsInRelation(WordPair.Item1, WordPair.Item2) ? 0 : 1;
+                if (i > LocalError) break;
+            }
+            return i;
+        }
         /// <summary>
         /// Metoda licząca błąd i aktualizująca najlepszą wartość lokalną
         /// </summary>
         /// <returns>Błąd dla danej cząsteczki</returns>
         public int UpdateLocal()
         {
-            var actualError = MachinePSO.Words.Sum(WordPair => Core.AreWordsInRelation(WordPair.Item1, WordPair.Item2) == MachinePSO.AreWordsInRelation(WordPair.Item1, WordPair.Item2) ? 0 : 1);
+            var actualError = GetBetterError();
             if (actualError < LocalError)
             {
                 LocalError = actualError;

@@ -9,11 +9,51 @@ using System.Threading.Tasks;
 
 namespace TestGenerator
 { 
+
     /// <summary>
     /// Klasa opisująca zbiory testowe
     /// </summary>
     public class TestSets
     {
+        public class WordEqualityComparer : IEqualityComparer<int[]>
+        {
+            public bool Equals(int[] t1, int[] t2)
+            {
+                if (t1 == null && t2 == null) return true;
+                if (t1 == null || t2 == null) return false;
+                if (t1.Length != t2.Length) return false;
+                for (int i = 0; i < t1.Length; i++) if (t1[i] != t2[i]) return false;
+                return true;
+            }
+
+            public int GetHashCode(int[] obj)
+            {
+                return obj.GetHashCode();
+            }
+        }
+
+        private class WordPairEqualityComparer : IEqualityComparer<Tuple<int[],int[]>>
+        {
+
+            public bool Equals(int[] t1, int[] t2)
+            {
+                if (t1 == null && t2 == null) return true;
+                if (t1 == null || t2 == null) return false;
+                if (t1.Length != t2.Length) return false;
+                for (int i = 0; i < t1.Length; i++) if (t1[i] != t2[i]) return false;
+                return true;
+            }
+
+            public bool Equals(Tuple<int[], int[]> x, Tuple<int[], int[]> y)
+            {
+                return (Equals(x.Item1, y.Item1) && Equals(x.Item2, y.Item2)) || (Equals(x.Item1, y.Item2) && Equals(x.Item2, y.Item1));
+            }
+
+            public int GetHashCode(Tuple<int[], int[]> obj)
+            {
+                return obj.GetHashCode();
+            }
+        }
         private static Tuple<T1,T2> Inverse<T1, T2>(Tuple<T2, T1> t)
         {
             return new Tuple<T1, T2>(t.Item2, t.Item1);
@@ -29,6 +69,16 @@ namespace TestGenerator
             TestSet = testSet;
             ControlSet = controlSet;
             LetterCount = m.LetterCount;
+            //AllWords = TestSet.Select(x => x.Key.Item1).Concat(testSet.Select(x => x.Key.Item2)).Distinct().ToList();
+            AllWords = GetAllWords();
+        }
+
+        private List<int[]> GetAllWords()
+        {
+            var allWords = TestSet.Keys.ToArray().Select(x => x.Item1).ToList();
+            var p = TestSet.Keys.ToArray().Select(x => x.Item2).Where(x => !allWords.Contains(x, new WordEqualityComparer())).ToList();
+            allWords = allWords.Concat(p).ToList();
+            return allWords;
         }
         /// <summary>
         /// Metoda Ładuje zbiór testowy z pliku
@@ -173,6 +223,10 @@ namespace TestGenerator
         /// </summary>
         public Dictionary<Tuple<int[], int[]>, bool> TestSet
         { get; private set; }
+
+        public List<int[]> AllWords
+        { get; private set; }
+
         /// <summary>
         /// Zbiór kontrolny
         /// </summary>
@@ -244,6 +298,8 @@ namespace TestGenerator
             }
             return res.Select(x => m.alphabet.Translate(x).ToArray()).ToList();
         }
+       
+      
         /// <summary>
         /// Metoda łączy słowa w pary
         /// </summary>
@@ -254,26 +310,30 @@ namespace TestGenerator
         /// <param name="randomWords">Lista długich słów generowanych losowo</param>
         private void GenerateSets(Machine m, int controlCount, int testCount, List<int[]> shortWords, List<int[]> randomWords)
         {
-            var allWords = shortWords.Concat(randomWords).Select(x => m.alphabet.Translate(x.ToList())).ToArray();
-            var testSetTemp = new Dictionary<Tuple<string, string>, bool>();
+            var Comparer = new WordPairEqualityComparer();
+            var allWords = shortWords.Concat(randomWords).ToArray();
+            AllWords = allWords.ToList();
+            var testSetTemp = new Dictionary<Tuple<int[], int[]>, bool>(Comparer);
             for (int i=0; i<shortWords.Count; i++)
                 for(int j=i+1; j<shortWords.Count; j++)
                 {
                     var rel = m.AreWordsInRelation(shortWords[i], shortWords[j]);
-                    var w1 = m.alphabet.Translate(shortWords[i].ToList());
-                    var w2 = m.alphabet.Translate(shortWords[j].ToList());
-                    testSetTemp.Add(new Tuple<string, string>(w1, w2), rel);
+                    var w1 = shortWords[i];
+                    var w2 = shortWords[j];
+                    testSetTemp.Add(new Tuple<int[], int[]>(w1, w2), rel);
                     //testSetTemp.Add(new Tuple<string, string>(w2, w1), rel);
                 }
-            for (int i = 0; i < testCount; i++)
+            for (
+                int i = 0; i < testCount; i++)
             {
-                var pair = new Tuple<string, string>(null, null);
-                while (pair.Item1 == pair.Item2 || testSetTemp.ContainsKey(pair) || testSetTemp.ContainsKey(Inverse(pair)))
-                    pair = new Tuple<string, string>(allWords[rand.Next(allWords.Length)], allWords[rand.Next(allWords.Length)]);
+                var pair = new Tuple<int[], int[]>(null, null);
+                while (Comparer.Equals(pair.Item2,pair.Item1)|| testSetTemp.ContainsKey(pair) )
+                    pair = new Tuple<int[], int[]>(allWords[rand.Next(allWords.Length)], allWords[rand.Next(allWords.Length)]);
                 var rel = m.AreWordsInRelation(pair.Item1, pair.Item2);
                 testSetTemp.Add(pair, rel);
                 //testSetTemp.Add(Inverse(pair), rel);
             }
+            /*
             var controlSetTemp = new Dictionary<Tuple<string, string>, bool>();
             for (int i = 0; i < controlCount; i++)
             {
@@ -284,18 +344,27 @@ namespace TestGenerator
                 controlSetTemp.Add(pair, rel);
                 //controlSetTemp.Add(Inverse(pair), rel);
             }
-            foreach(var keyVal in testSetTemp)
+            /*
+             * /
+            while(testSetTemp.Count>0)
             {
-                var it1 = m.alphabet.Translate(keyVal.Key.Item1).ToArray();
-                var it2 = m.alphabet.Translate(keyVal.Key.Item2).ToArray();
-                TestSet.Add(new Tuple<int[], int[]>(it1, it2), keyVal.Value);
-            }
+                var key = testSetTemp.Keys.First();
+                var it1 = m.alphabet.Translate(key.Item1).ToArray();
+                var it2 = m.alphabet.Translate(key.Item2).ToArray();
+                TestSet.Add(new Tuple<int[], int[]>(it1, it2), testSetTemp[key]);
+                testSetTemp.Remove(key);
+              
+            }*/
+            /*
             foreach (var keyVal in controlSetTemp)
             {
                 var it1 = m.alphabet.Translate(keyVal.Key.Item1).ToArray();
                 var it2 = m.alphabet.Translate(keyVal.Key.Item2).ToArray();
                 ControlSet.Add(new Tuple<int[], int[]>(it1, it2), keyVal.Value);
             }
+             */
+            TestSet = testSetTemp;
+            //AllWords = GetAllWords();
         }
     }
 }

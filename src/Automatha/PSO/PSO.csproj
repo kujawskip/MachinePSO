@@ -48,6 +48,10 @@
       <Project>{242ecfd2-70cf-4eb5-9365-1580e9c9dad2}</Project>
       <Name>LanguageProcessor</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TestGenerator\TestGenerator.csproj">
+      <Project>{494733b6-bbaf-4108-b2b1-a59b26158a98}</Project>
+      <Name>TestGenerator</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

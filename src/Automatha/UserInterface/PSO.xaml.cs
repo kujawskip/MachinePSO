@@ -45,7 +45,7 @@ namespace UserInterface
             TestCount = set.TestSet.Count;
             DataContext = this;
            
-            MachinePSO.Initialize(set.TestSet.Keys.ToList(), (w1, w2) => (set.TestSet[new Tuple<int[], int[]>(w1, w2)]), MaxStates, Base.alphabet);
+            MachinePSO.Initialize(set.TestSet.Keys.ToList(), (w1, w2) => (set.TestSet[new Tuple<int[], int[]>(w1, w2)]), MaxStates, Base.alphabet, set.AllWords);
             MachinePSO.InputParameters(Omega, OmegaLocal, OmegaGlobal);
         }
         public void NotifyPropertyChanged(string propertyName)

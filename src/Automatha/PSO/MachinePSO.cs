@@ -37,6 +37,7 @@ namespace PSO
         private static Alphabet alphabet;
         private static int MaxStates;
         private static List<Particle> Particles;
+        public static List<int[]> AllWords { get; private set; }
         public static double Omega, OmegaLocal, OmegaGlobal;
         private static Random random = new Random();
         /// <summary>
@@ -46,10 +47,11 @@ namespace PSO
         /// <param name="relation">Delegat opisujący relacje indukowaną przez język</param>
         /// <param name="MaxStates">Maksymalna ilość stanów osiągalna przez automat</param>
         /// <param name="A">Alfabet dla którego rozwiązywany jest problem</param>
-        public static void Initialize(List<Tuple<int[], int[]>> words, LanguageRelation relation, int MaxStates, Alphabet A)
+        public static void Initialize(List<Tuple<int[], int[]>> words, LanguageRelation relation, int MaxStates, Alphabet A,List<int[]> allwords)
         {
             Particles = new List<Particle>();
             Words = words;
+            AllWords = allwords;
             MachinePSO.relation = relation;
             BestError = int.MaxValue;
             BestMachine = Machine.GenerateRandomMachine(1, A);
