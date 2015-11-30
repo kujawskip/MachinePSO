@@ -177,7 +177,7 @@ namespace UserInterface
 
         private void PSO_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if(e.PropertyName=="BestError")
+            if(e.PropertyName=="BestError" || e.PropertyName=="BestErrorAbsolute")
             {
                 UpdateResultTable();
             }
