@@ -31,7 +31,7 @@ namespace UserInterface
         int TestCount;
         private int ProgressCount;
         private double DeathChance;
-
+        TestSets set;
         public int ParticleCount
         {
             get { return particleCount; }
@@ -44,7 +44,7 @@ namespace UserInterface
             InitializeComponent();
             TestCount = set.TestSet.Count;
             DataContext = this;
-           
+            this.set = set;
             MachinePSO.Initialize(set.TestSet.Keys.ToList(), (w1, w2) => (set.TestSet[new Tuple<int[], int[]>(w1, w2)]), MaxStates, Base.alphabet, set.AllWords);
             MachinePSO.InputParameters(Omega, OmegaLocal, OmegaGlobal);
         }
@@ -173,6 +173,9 @@ namespace UserInterface
             await t;
             MessageBox.Show("Calculation finished", "Message", MessageBoxButton.OK, MessageBoxImage.Information);
             LogVisible = Visibility.Visible;
+            double per;
+           int err = MachinePSO.PerformTest(set.ControlSet, out per);
+           MessageBox.Show("Control set: " + per.ToString() + " ( 100 * " + err.ToString() + " / " + set.ControlSet.Count.ToString() + ")", "Message", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void PSO_PropertyChanged(object sender, PropertyChangedEventArgs e)

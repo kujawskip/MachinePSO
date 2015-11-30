@@ -333,13 +333,13 @@ namespace TestGenerator
                 testSetTemp.Add(pair, rel);
                 //testSetTemp.Add(Inverse(pair), rel);
             }
-            /*
-            var controlSetTemp = new Dictionary<Tuple<string, string>, bool>();
+            
+            var controlSetTemp = new Dictionary<Tuple<int[], int[]>, bool>(Comparer);
             for (int i = 0; i < controlCount; i++)
             {
-                var pair = new Tuple<string, string>(null, null);
-                while (pair.Item1 == pair.Item2 || testSetTemp.ContainsKey(pair) || testSetTemp.ContainsKey(Inverse(pair)) || controlSetTemp.ContainsKey(pair) || controlSetTemp.ContainsKey(Inverse(pair)))
-                    pair = new Tuple<string, string>(allWords[rand.Next(allWords.Length)], allWords[rand.Next(allWords.Length)]);
+                var pair = new Tuple<int[], int[]>(null, null);
+                while (Comparer.Equals(pair.Item2, pair.Item1) || controlSetTemp.ContainsKey(pair)||testSetTemp.ContainsKey(pair))
+                    pair = new Tuple<int[], int[]>(allWords[rand.Next(allWords.Length)], allWords[rand.Next(allWords.Length)]);
                 var rel = m.AreWordsInRelation(pair.Item1, pair.Item2);
                 controlSetTemp.Add(pair, rel);
                 //controlSetTemp.Add(Inverse(pair), rel);
@@ -364,6 +364,7 @@ namespace TestGenerator
             }
              */
             TestSet = testSetTemp;
+            ControlSet = controlSetTemp;
             //AllWords = GetAllWords();
         }
     }
