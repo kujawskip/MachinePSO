@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using LanguageProcessor;
+using System.ComponentModel;
 
 namespace PSO
 
@@ -29,7 +30,7 @@ namespace PSO
         /// <summary>
         /// Najlepszy automat na przestrzeni wszystkich obliczeń PSO
         /// </summary>
-        public static Machine BestMachine;
+        public static volatile Machine BestMachine;
         /// <summary>
         /// Błąd najlepszego automatu
         /// </summary>
@@ -38,8 +39,19 @@ namespace PSO
         private static int MaxStates;
         private static List<Particle> Particles;
         public static List<int[]> AllWords { get; private set; }
+        public static bool Stop { get; set; }
+
         public static double Omega, OmegaLocal, OmegaGlobal;
         private static Random random = new Random();
+
+        public static event EventHandler BestErrorChanged;
+
+        private static void RaiseEvent()
+        {
+            var handler = BestErrorChanged;
+            if (handler != null)
+                handler(typeof(MachinePSO), EventArgs.Empty);
+        }
 
         public static int PerformTest(Dictionary<Tuple<int[], int[]>, bool> set, out double percentage)
         {
@@ -128,14 +140,22 @@ namespace PSO
             }
 
             Particles.Clear();
-            Particles.AddRange(machines.Select(M => new Particle(M)));
-            var updates = new List<Task>();
+            var generation = machines.Select(x => Task.Run(() => new Particle(x)));
+            await Task.WhenAll(generation);
+            Particles.AddRange(generation.Select(x =>x.Result));
+            if (Particle.GlobalError < BestError)
+            {
+                BestMachine.stateFunction = Particle.GlobalMax;
+                BestError = Particle.GlobalError;
+                RaiseEvent();
+            }
             while (await Step() && Particle.GlobalError != 0)
             {
                 if (Particle.GlobalError < BestError)
                 {
                     BestMachine.stateFunction = Particle.GlobalMax;
                     BestError = Particle.GlobalError;
+                    RaiseEvent();
                 }
                 var tasks = Particles.Select(x => Task.Run(() =>
                 {

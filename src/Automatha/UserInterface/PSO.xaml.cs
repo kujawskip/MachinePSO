@@ -84,12 +84,43 @@ namespace UserInterface
 
         public float BestError
         {
-            get { return MachinePSO.BestError == int.MaxValue ? 100 : 100f * (float)MachinePSO.BestError / TestCount; }
+            get { return BestErrorAbsolute == int.MaxValue ? 100 : 100f * (float)BestErrorAbsolute / TestCount; }
         }
+        private float bestErrorAbs;
         public float BestErrorAbsolute
         {
-            get { return MachinePSO.BestError; }
+            //get { return MachinePSO.BestError; }
+            get { return bestErrorAbs; }
+            set
+            {
+                bestErrorAbs = value;
+                NotifyPropertyChanged("BestError");
+                NotifyPropertyChanged("BestErrorAbsolute");
+            }
         }
+
+        private string errorCg = "";
+        public string ErrorCG
+        {
+            get { return errorCg; }
+            set
+            {
+                errorCg = value;
+                NotifyPropertyChanged("ErrorCG");
+            }
+        }
+
+        private string errorAbsCg = "";
+        public string ErrorAbsoluteCG
+        {
+            get { return errorAbsCg; }
+            set
+            {
+                errorAbsCg = value;
+                NotifyPropertyChanged("ErrorAbsoluteCG");
+            }
+        }
+
         private int state = 2;
 
         public void UpdateResultTable()
@@ -134,56 +165,43 @@ namespace UserInterface
         Task<bool> iteration;
         private async void StartPSO()
         {
+            MachinePSO.Stop = false;
             int state = State;
             int pCount = particleCount;
-            PropertyChanged += PSO_PropertyChanged;
-            bool stillWorking = true;
-            var t = Task.Factory.StartNew(async () =>
+            BestErrorAbsolute = TestCount;
+            MachinePSO.BestErrorChanged += MachinePSO_BestErrorChanged;
+            for (iteration = MachinePSO.Iterate(state, pCount, ProgressCount, DeathChance);
+                await iteration;
+                iteration = MachinePSO.Iterate(state, pCount, ProgressCount, DeathChance))
             {
-                var lastError = BestError;
-                while (stillWorking)
-                {
-                    await Task.Delay(TimeSpan.FromSeconds(1));
-                    if (BestError != lastError)
-                    {
-                        NotifyPropertyChanged("BestError");
-                        NotifyPropertyChanged("BestErrorAbsolute");
-                    }
-                }
-            });
-            for (iteration = Task.Run(async () => await MachinePSO.Iterate(state, pCount,ProgressCount,DeathChance));
-                await iteration; 
-                iteration = Task.Run(async () => await MachinePSO.Iterate(state, pCount,ProgressCount,DeathChance)))
-            {
-                PropertyChanged -= PSO_PropertyChanged;
-                NotifyPropertyChanged("BestError");
-                NotifyPropertyChanged("BestErrorAbsolute");
-                UpdateResultTable();
-                PropertyChanged += PSO_PropertyChanged;
+                //PropertyChanged -= PSO_PropertyChanged;
+
+                //NotifyPropertyChanged("BestError");
+                //NotifyPropertyChanged("BestErrorAbsolute");
+
+                //UpdateResultTable();
+                //PropertyChanged += PSO_PropertyChanged;
                 State++;
                 state = State;
                 if (ClosingRequested)
                 {
-                    PropertyChanged -= PSO_PropertyChanged;
+                    MachinePSO.BestErrorChanged -= MachinePSO_BestErrorChanged;
                     return;
                 }
             }
-            PropertyChanged -= PSO_PropertyChanged;
-            stillWorking = false;
-            await t;
+            MachinePSO.BestErrorChanged -= MachinePSO_BestErrorChanged;
             MessageBox.Show("Calculation finished", "Message", MessageBoxButton.OK, MessageBoxImage.Information);
             LogVisible = Visibility.Visible;
             double per;
-           int err = MachinePSO.PerformTest(set.ControlSet, out per);
-           MessageBox.Show("Control set: " + per.ToString() + " ( 100 * " + err.ToString() + " / " + set.ControlSet.Count.ToString() + ")", "Message", MessageBoxButton.OK, MessageBoxImage.Information);
+            int err = MachinePSO.PerformTest(set.ControlSet, out per);
+            ErrorCG = per.ToString();
+            ErrorAbsoluteCG = err.ToString();
         }
 
-        private void PSO_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void MachinePSO_BestErrorChanged(object sender, EventArgs e)
         {
-            if(e.PropertyName=="BestError" || e.PropertyName=="BestErrorAbsolute")
-            {
-                UpdateResultTable();
-            }
+            BestErrorAbsolute = MachinePSO.BestError;
+            UpdateResultTable();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -192,7 +210,7 @@ namespace UserInterface
         {
             ClosingRequested = true;
             var msg = Task.Run(() => MessageBox.Show("Trwa zamykanie", "Message", MessageBoxButton.OK, MessageBoxImage.Information));
-            var iter = Task.Run(() => { if (iteration != null) iteration.Wait(); });
+            var iter = Task.Run(() => { MachinePSO.Stop = true; if (iteration != null) iteration.Wait(); });
             Task.WaitAll(new Task[] { msg, iter });
         }
 

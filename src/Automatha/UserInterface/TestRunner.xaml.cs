@@ -184,6 +184,12 @@ namespace UserInterface
             DialogResult = true;
             Close();
         }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            GC.Collect();
+        }
+
         public void NotifyPropertyChanged(string propertyName)
         {
             if (PropertyChanged != null)
