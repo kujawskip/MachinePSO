@@ -136,6 +136,7 @@ namespace UserInterface
         {
             int state = State;
             int pCount = particleCount;
+            DateTime StartTime = DateTime.Now;
             PropertyChanged += PSO_PropertyChanged;
             bool stillWorking = true;
             var t = Task.Factory.StartNew(async () =>
@@ -171,7 +172,8 @@ namespace UserInterface
             PropertyChanged -= PSO_PropertyChanged;
             stillWorking = false;
             await t;
-            MessageBox.Show("Calculation finished", "Message", MessageBoxButton.OK, MessageBoxImage.Information);
+            DateTime EndTime = DateTime.Now;
+            MessageBox.Show("Calculation finished " + (EndTime - StartTime).ToString(), "Message", MessageBoxButton.OK, MessageBoxImage.Information);
             LogVisible = Visibility.Visible;
             double per;
            int err = MachinePSO.PerformTest(set.ControlSet, out per);
