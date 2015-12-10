@@ -243,9 +243,11 @@ namespace TestGenerator
         /// <param name="controlCount">Wielkość zbioru kontrolnego</param>
         public TestSets(Machine m, int thoroughCount = 5, int randomCount = 50, int controlCount = 500):this(new Dictionary<Tuple<int[], int[]>, bool>(), new Dictionary<Tuple<int[], int[]>, bool>(), m)
         {
-            var shortWords = GenerateAllWords(thoroughCount, m);
-            var concats = GenerateRandomConcats(shortWords, randomCount + controlCount, m);
-            GenerateSets(m, controlCount, randomCount, shortWords, concats);
+            List<int[]> shortWords;
+            List<int[]> longWords;
+            GenerateAllWords(thoroughCount, randomCount + controlCount, m, out shortWords, out longWords);
+            longWords = GenerateRandomConcats(longWords, randomCount, m);
+            GenerateSets(m, controlCount, randomCount, shortWords, longWords);
         }
 
        /// <summary>
@@ -254,28 +256,36 @@ namespace TestGenerator
        /// <param name="wordLength">Długość słów</param>
        /// <param name="m">Automat</param>
        /// <returns>Lista wszystkich słów</returns>
-        private List<int[]> GenerateAllWords(int wordLength, Machine m)
+        private void GenerateAllWords(int wordLength, int longWordsCount, Machine m, out List<int[]> shortWords, out List<int[]> longWords)
         {
-            var all = new List<int[]> { new int[0] };
-            //Do słów długości thoroughCount
-            for (int i = 1; i <= wordLength; i++)
+            shortWords = new List<int[]>();
+            longWords = new List<int[]>();
+            //var all = new List<int[]> { new int[0] };
+            var previousStep = new List<int[]>();
+            var actualStep = new List<int[]>() { new int[0] };
+            //Do słów długości wordLength
+            for (int i = 1; i <= wordLength + 1 || actualStep.Count < longWordsCount; i++)
             {
-                var previousStep = all.Where(x => x.Length == i - 1).ToArray();
-                //var allCount = all.Count;
+                previousStep.AddRange(actualStep);
+                actualStep.Clear();
                 //Dodanie j-tej litery
                 for (int j = 0; j < LetterCount; j++)
                 {
                     //na koniec k-tego słowa
-                    for (int k = 0; k < previousStep.Length; k++)
+                    for (int k = 0; k < previousStep.Count; k++)
                     {
                         var nArr = new int[previousStep[k].Length + 1];
                         previousStep[k].CopyTo(nArr, 0);
                         nArr[previousStep[k].Length] = j;
-                        all.Add(nArr);
+                        actualStep.Add(nArr);
                     }
                 }
+                if (i > wordLength)
+                    longWords.AddRange(actualStep);
+                else
+                    shortWords.AddRange(actualStep);
+                previousStep.Clear();
             }
-            return all;
         }
         /// <summary>
         /// Metoda generuje losowe połączenia słów w celu utworzenia dłuższych słów
@@ -286,7 +296,6 @@ namespace TestGenerator
         /// <returns>Lista słów</returns>
         private List<int[]> GenerateRandomConcats(List<int[]> words, int randomCount, Machine m)
         {
-
             var wor = words.Select(x => m.alphabet.Translate(x.ToList())).ToArray();
             var res = new List<string>();
             for (int i=0; i<randomCount; i++)
@@ -327,7 +336,7 @@ namespace TestGenerator
                 int i = 0; i < testCount; i++)
             {
                 var pair = new Tuple<int[], int[]>(null, null);
-                while (Comparer.Equals(pair.Item2,pair.Item1)|| testSetTemp.ContainsKey(pair) )
+                while (Comparer.Equals(pair.Item2,pair.Item1) || testSetTemp.ContainsKey(pair) )
                     pair = new Tuple<int[], int[]>(allWords[rand.Next(allWords.Length)], allWords[rand.Next(allWords.Length)]);
                 var rel = m.AreWordsInRelation(pair.Item1, pair.Item2);
                 testSetTemp.Add(pair, rel);

@@ -1,10 +1,9 @@
 ﻿using LanguageProcessor;
+using TestGenerator;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using TestGenerator;
 
 namespace PSO
 {
@@ -20,7 +19,7 @@ namespace PSO
         /// <summary>
         /// Błąd najlepszego globalnie automatu
         /// </summary>
-        internal static int GlobalError;
+        internal static volatile int GlobalError;
 
         private static int LastChange;
         private static int MaxChange;
