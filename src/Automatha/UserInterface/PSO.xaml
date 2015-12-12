@@ -9,6 +9,8 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="80"/>
                 <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+
             </Grid.ColumnDefinitions>
             <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
                 <Grid.RowDefinitions>
@@ -38,6 +40,7 @@
                 <TextBlock Grid.Row ="4" Margin="4" HorizontalAlignment="Right">Błędnie przetworzone pary (grupa testowa):</TextBlock>
                 <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding ErrorAbsoluteCG}" Margin="4"/>
             </Grid>
+            <Button Grid.Column="3" VerticalAlignment="Center" Padding="2" Margin="4" Visibility="{Binding LogVisible}" Click="CompareMachines_Click">Porównaj automaty</Button>
             <Button Grid.Column="1" VerticalAlignment="Center" Padding="2" Margin="4" Visibility="{Binding LogVisible}" Click="CreateLog_Click">Stwórz log</Button>
             <Grid Name="ModifableGrid" Grid.Row="4" Grid.Column="2" Margin="4" MinHeight="10" HorizontalAlignment="Left" VerticalAlignment="Center"/>
             <Button Grid.Column="2" Name="StartButton" Click="StartPSO_Click" Margin="4" Padding="4" VerticalAlignment="Center">Start</Button>

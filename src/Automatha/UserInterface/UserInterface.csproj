@@ -53,12 +53,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="MachineComparer.xaml.cs">
+      <DependentUpon>MachineComparer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="PSO.xaml.cs">
       <DependentUpon>PSO.xaml</DependentUpon>
     </Compile>
     <Compile Include="TestRunner.xaml.cs">
       <DependentUpon>TestRunner.xaml</DependentUpon>
     </Compile>
+    <Page Include="MachineComparer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

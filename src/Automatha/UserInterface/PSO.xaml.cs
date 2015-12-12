@@ -19,6 +19,7 @@ using System.Threading;
 using Microsoft.Win32;
 using System.IO;
 using System.Diagnostics;
+using System.Windows.Media.Animation;
 
 namespace UserInterface
 {
@@ -32,6 +33,8 @@ namespace UserInterface
         private int ProgressCount;
         private double DeathChance;
         TestSets set;
+        private Machine Base;
+        private Grid machine1, machine2;
         public int ParticleCount
         {
             get { return particleCount; }
@@ -40,6 +43,8 @@ namespace UserInterface
         {
             this.ProgressCount = ProgressCount;
             this.DeathChance = DeathChance;
+            this.Base = Base;
+            machine2 = GenerateMachineRepresentation(Base);
             this.particleCount = ParticleCount;
             InitializeComponent();
             TestCount = set.TestSet.Count;
@@ -169,7 +174,7 @@ namespace UserInterface
             int state = State;
             int pCount = particleCount;
 
-DateTime StartTime = DateTime.Now;
+    DateTime StartTime = DateTime.Now;
             BestErrorAbsolute = TestCount;
             MachinePSO.BestErrorChanged += MachinePSO_BestErrorChanged;
             for (iteration = MachinePSO.Iterate(state, pCount, ProgressCount, DeathChance);
@@ -255,6 +260,150 @@ DateTime StartTime = DateTime.Now;
             {
                 Debug.WriteLine(e.Message);
             }
+        }
+
+        private void CompareMachines_Click(object sender, RoutedEventArgs e)
+        {
+            if (machine1 == null)
+            {
+                var M = MachinePSO.BestMachine;
+                var darray = M.stateFunction;
+                darray = RemoveUnAccessible(darray);
+                darray = ReorderAccordingTo(darray,Base.stateFunction);
+                machine1 = GenerateMachineRepresentation(new Machine(Base.alphabet, darray));
+
+            }
+            MachineComparer mc = new MachineComparer(machine2,machine1);
+            mc.ShowDialog();
+
+        }
+        private int GetMinEdge(int a, double[,] d)
+        {
+            int r = d.GetLength(0)+2;
+            for (int i = 0; i < d.GetLength(1); i++) if (((int)d[a, i]) < r) r = (int)d[a, i];
+            return r;
+        }
+        private int GetMaxEdge(int a, double[,] d)
+        {
+            int r = 0;
+            for (int i = 0; i < d.GetLength(1); i++) if (((int)d[a, i]) > r) r=(int)d[a,i];
+            return r;
+        }
+        private int GetSmallestRepetitions(int a, double[,] d)
+        {
+            int[] t = new int[d.GetLength(0)];
+            for (int i = 0; i < d.GetLength(0); i++) t[i] = 0;
+            for (int i = 0; i < d.GetLength(1); i++) t[(int)d[a, i]]++;
+            return t.Where(s=>s!=0).Min();
+        }
+        private int GetSelfDeegree(int a, double[,] d)
+        {
+            int r = 0;
+            for(int i=0;i<d.GetLength(1);i++) if (((int) d[a, i]) == a) r++;
+            return r;
+        }
+        private int GetBiggestRepetitions(int a, double[,] d)
+        {
+            int[] t = new int[d.GetLength(0)];
+            for (int i = 0; i < d.GetLength(0); i++) t[i] = 0;
+            for (int i = 0; i < d.GetLength(1); i++) t[(int) d[a, i]]++;
+            return t.Max();
+        }
+        private int GetDeegree(int a, double[,] d)
+        {
+            List<int> L = new List<int>();
+            for (int i = 0; i < d.GetLength(1); i++)
+            {
+                int t = (int)d[a, i];
+                if (!L.Contains(t)) L.Add(t);
+            }
+            return L.Count;
+        }
+        private int CompareForSorting(int a, int b, double[,] d)
+        {
+            List<System.Func<int,double[,],int>> FL = new List<Func<int, double[,], int>>();
+            FL.AddRange(new Func<int,double[,],int> []{GetDeegree,GetSelfDeegree,GetBiggestRepetitions,GetSmallestRepetitions,GetMaxEdge,GetMinEdge});
+            return FL.Select(F => F(a, d).CompareTo(F(b, d))).FirstOrDefault(k => k != 0);
+        }
+
+        private void Swap(ref double[,] d, int a, int b)
+        {
+            
+            for (int i = 0; i < d.GetLength(1); i++)
+            {
+               var t = d[a, i];
+                d[a, i] = d[b, i];
+                d[b, i] = t;
+            }
+            
+
+        }
+        private double[,] ReorderAccordingTo(double[,] darray, double[,] p,int times=3)
+        {
+            for (int K = 0; K < times; K++)
+            {
+                int n = darray.GetLength(0);
+                List<int> L = new List<int>();
+                for (int i = 1; i < darray.GetLength(0); i++) L.Add(i);
+                List<int> La = new List<int>();
+                for (int i = 1; i < p.GetLength(0); i++) La.Add(i);
+
+                La.Sort((s, t) => (CompareForSorting(s, t, p)));
+                L.Sort((s, t) => (CompareForSorting(s, t, darray)));
+                La.Insert(0, 0);
+                L.Insert(0, 0);
+                for (int i = 0; i < n; i++)
+                {
+                    for (int j = 0; j < darray.GetLength(1); j++)
+                    {
+                        int t = (int) darray[i, j];
+                        int k = L.IndexOf(t);
+                        if (k < La.Count)
+                        {
+                            darray[i, j] = La[k];
+                        }
+                    }
+                }
+                for (int i = 1; i < Math.Min(La.Count,L.Count); i++)
+                {
+                    Swap(ref darray,L[i],La[i]);
+                }
+            }
+            return darray;
+        }
+
+        private double[,] RemoveUnAccessible(double[,] darray)
+        {
+            List<int> Current = new List<int>();
+            Current.Add(0);
+            List<int> Accessible = new List<int>();
+            Accessible.Add(0);
+            while (Current.Count > 0)
+            {
+                var I = Current[0];
+                Current.RemoveAt(0);
+                for (int i = 0; i < Base.alphabet.Letters.Length; i++)
+                {
+                    var J = (int) darray[I, i];
+                    if (!Accessible.Contains(J) && !Current.Contains(J))
+                    {
+                        Accessible.Add(J);
+                        Current.Add(J);
+                    }
+                }
+            }
+            Accessible.Sort();
+            double[,] result = new double[Accessible.Count,Base.alphabet.Letters.Length];
+            {
+                for (int i = 0; i < Accessible.Count; i++)
+                {
+                    for (int j = 0; j < Base.alphabet.Letters.Length;j++)
+                    {
+                        result[i, j] = Accessible.IndexOf((int)darray[Accessible[i], j]);
+                    }
+                }
+            }
+            return result;
         }
     }
 }
