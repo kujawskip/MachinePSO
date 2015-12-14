@@ -216,7 +216,7 @@ namespace TestGenerator
 
         int LetterCount;
         /// <summary>
-        /// Zbiór testowy
+        /// Zbiór treningowy
         /// </summary>
         public Dictionary<Tuple<int[], int[]>, bool> TrainingSet
         { get; private set; }
@@ -319,6 +319,7 @@ namespace TestGenerator
         /// <param name="longWords">Lista "długich" słów generowanych losowo</param>
         private void GenerateSets(Machine m, int testSetSize, int trainingSetLongWordsCount, List<int[]> shortWords, List<int[]> longWords)
         {
+            AllWords = shortWords.Concat(longWords).ToList();
             var Comparer = new WordPairEqualityComparer();
             var trainingSet = new Dictionary<Tuple<int[], int[]>, bool>(Comparer);
 
