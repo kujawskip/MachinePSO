@@ -215,20 +215,23 @@ namespace TestGenerator
         }
 
         int LetterCount;
+        public int ShortWordMaxLength;
+
         /// <summary>
         /// Zbiór treningowy
         /// </summary>
         public Dictionary<Tuple<int[], int[]>, bool> TrainingSet
         { get; private set; }
 
-        public List<int[]> AllWords
-        { get; private set; }
-
         /// <summary>
-        /// Zbiór kontrolny
+        /// Zbiór testowy
         /// </summary>
         public Dictionary<Tuple<int[], int[]>, bool> TestSet
         { get; private set; }
+
+        public List<int[]> AllWords
+        { get; private set; }
+
         Random rand = new Random();
 
         /// <summary>
@@ -241,6 +244,7 @@ namespace TestGenerator
         public TestSets(Machine m, int shortWordMaxLength = 4, int trainingSetLongWordsCount = 303810, int testSetSize = 607620)
             : this(new Dictionary<Tuple<int[], int[]>, bool>(), new Dictionary<Tuple<int[], int[]>, bool>(), m)
         {
+            ShortWordMaxLength = shortWordMaxLength;
             List<int[]> shortWords;
             List<int[]> longWords;
             GenerateAllWords(shortWordMaxLength, trainingSetLongWordsCount + testSetSize, out shortWords, out longWords);

@@ -96,6 +96,48 @@ namespace UserInterface
             }
         }
 
+        private string _trainingSetShortError = "";
+        public string TrainingSetShortError
+        {
+            get { return _trainingSetShortError; }
+            set
+            {
+                _trainingSetShortError = value;
+                NotifyPropertyChanged("TrainingSetShortError");
+            }
+        }
+        private string _trainingSetShortAbsoluteError = "";
+        public string TrainingSetShortAbsoluteError
+        {
+            get { return _trainingSetShortAbsoluteError; }
+            set
+            {
+                _trainingSetShortAbsoluteError = value;
+                NotifyPropertyChanged("TrainingSetShortAbsoluteError");
+            }
+        }
+
+        private string _trainingSetLongError = "";
+        public string TrainingSetLongError
+        {
+            get { return _trainingSetLongError; }
+            set
+            {
+                _trainingSetLongError = value;
+                NotifyPropertyChanged("TrainingSetLongError");
+            }
+        }
+        private string _trainingSetLongAbsoluteError = "";
+        public string TrainingSetLongAbsoluteError
+        {
+            get { return _trainingSetLongAbsoluteError; }
+            set
+            {
+                _trainingSetLongAbsoluteError = value;
+                NotifyPropertyChanged("TrainingSetLongAbsoluteError");
+            }
+        }
+
         private string _testSetError = "";
         public string TestSetError
         {
@@ -117,6 +159,7 @@ namespace UserInterface
                 NotifyPropertyChanged("TestSetAbsoluteError");
             }
         }
+
 
         private int state = 2;
 
@@ -192,6 +235,15 @@ namespace UserInterface
             int err = MachinePSO.PerformTest(set.TestSet, out per);
             TestSetError = per.ToString();
             TestSetAbsoluteError = err.ToString();
+
+            double trainingSetShortError, trainingSetLongError;
+            int trainingSetShortAbsoluteError, trainingSetLongAbsoluteError;
+            MachinePSO.PerformTrainingTest(set.ShortWordMaxLength, set.TrainingSet, out trainingSetShortError, out trainingSetLongError,
+                out trainingSetShortAbsoluteError, out trainingSetLongAbsoluteError);
+            TrainingSetShortError = trainingSetShortError.ToString();
+            TrainingSetLongError = trainingSetLongError.ToString();
+            TrainingSetShortAbsoluteError = trainingSetShortAbsoluteError.ToString();
+            TrainingSetLongAbsoluteError = trainingSetLongAbsoluteError.ToString();
         }
 
         private void MachinePSO_BestErrorChanged(object sender, EventArgs e)

@@ -69,6 +69,25 @@ namespace PSO
             return err;
         }
 
+        public static void PerformTrainingTest(int shortWordMaxLength, Dictionary<Tuple<int[], int[]>, bool> trainingSet, 
+            out double trainingSetShortError, out double trainingSetLongError, 
+            out int trainingSetShortAbsoluteError, out int trainingSetLongAbsoluteError)
+        {
+            trainingSetShortError = trainingSetLongError = trainingSetShortAbsoluteError = trainingSetLongAbsoluteError = 0;
+            if (trainingSet.Count == 0)
+                return;
+            foreach (var key in trainingSet.Keys)
+            {
+                if (trainingSet[key] == BestMachine.AreWordsInRelation(key.Item1, key.Item2)) continue;
+                if (key.Item1.Length > shortWordMaxLength || key.Item2.Length > shortWordMaxLength)
+                    ++trainingSetLongAbsoluteError;
+                else
+                    ++trainingSetShortAbsoluteError;
+            }
+            trainingSetShortError = 100 * (double)trainingSetShortAbsoluteError / trainingSet.Count;
+            trainingSetLongError = 100 * (double)trainingSetLongAbsoluteError / trainingSet.Count;
+        }
+
         /// <summary>
         /// Metoda inicjalizująca parametry PSO
         /// </summary>
