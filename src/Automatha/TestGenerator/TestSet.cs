@@ -241,25 +241,26 @@ namespace TestGenerator
         {
             List<int[]> shortWords;
             List<int[]> longWords;
-            GenerateAllWords(shortWordMaxLength, trainingSetLongWordsCount + testSetSize, m, out shortWords, out longWords);
-            longWords = GenerateRandomConcats(longWords, trainingSetLongWordsCount, m);
+            GenerateAllWords(shortWordMaxLength, trainingSetLongWordsCount + testSetSize, out shortWords, out longWords);
+            longWords = GenerateRandomConcats(longWords, trainingSetLongWordsCount, m.alphabet);
             GenerateSets(m, testSetSize, trainingSetLongWordsCount, shortWords, longWords);
         }
 
        /// <summary>
-       /// Metoda generuje wszystkie słowa o długości <= parametrowi wordLength
+       /// Metoda generuje wszystkie słowa o długości niewiększej niż parametr shortWordMaxLength
        /// </summary>
-       /// <param name="wordLength">Długość słów</param>
-       /// <param name="m">Automat</param>
+       /// <param name="shortWordMaxLength">Maksymalna długość "krótkiego" słowa</param>
+       /// <param name="longWordsCount">Liczba "długich" słów do wygenerowania</param>
        /// <returns>Lista wszystkich słów</returns>
-        private void GenerateAllWords(int wordLength, int longWordsCount, Machine m, out List<int[]> shortWords, out List<int[]> longWords)
+        private void GenerateAllWords(int shortWordMaxLength, int longWordsCount,
+            out List<int[]> shortWords, out List<int[]> longWords)
         {
             shortWords = new List<int[]>();
             longWords = new List<int[]>();
             var previousStep = new List<int[]>();
-            var actualStep = new List<int[]>() { new int[0] };
-            // Do słów długości wordLength
-            for (int i = 1; i <= wordLength + 1 || actualStep.Count < longWordsCount; i++)
+            var actualStep = new List<int[]> { new int[0] };
+            // Do słów długości shortWordMaxLength
+            for (int i = 1; i <= shortWordMaxLength + 1 || actualStep.Count < longWordsCount; i++)
             {
                 previousStep.AddRange(actualStep);
                 actualStep.Clear();
@@ -275,7 +276,7 @@ namespace TestGenerator
                         actualStep.Add(nArr);
                     }
                 }
-                if (i > wordLength)
+                if (i > shortWordMaxLength)
                     longWords.AddRange(actualStep);
                 else
                     shortWords.AddRange(actualStep);
@@ -286,21 +287,25 @@ namespace TestGenerator
         /// Metoda generuje losowe połączenia słów w celu utworzenia dłuższych słów
         /// </summary>
         /// <param name="words">Słowa do łączenia</param>
-        /// <param name="randomCount">Ilość słów</param>
-        /// <param name="m">Automat</param>
+        /// <param name="generateCount">Ilość słów do wygenerowania</param>
+        /// <param name="alphabet">Alfabet</param>
         /// <returns>Lista słów</returns>
-        private List<int[]> GenerateRandomConcats(List<int[]> words, int randomCount, Machine m)
+        private List<int[]> GenerateRandomConcats(List<int[]> words, int generateCount, Alphabet alphabet)
         {
-            var wor = words.Select(x => m.alphabet.Translate(x.ToList())).ToArray();
-            var res = new List<string>();
-            for (int i=0; i<randomCount; i++)
+            var wordsCount = words.Count;
+            var wordsArray = words.Select(x => alphabet.Translate(x.ToList())).ToArray();
+            var wordsSet = new HashSet<string>(wordsArray);
+            var res = new HashSet<string>();
+            for (int i = 0; i < generateCount; i++)
             {
                 var w = "";
-                while (res.Contains(w) || wor.Contains(w))
-                    w = wor[rand.Next(wor.Length)] + wor[rand.Next(wor.Length)];
+                while (res.Contains(w) || wordsSet.Contains(w))
+                {
+                    w = wordsArray[rand.Next(wordsCount)] + wordsArray[rand.Next(wordsCount)];
+                }   
                 res.Add(w);
             }
-            return res.Select(x => m.alphabet.Translate(x).ToArray()).ToList();
+            return res.Select(x => alphabet.Translate(x).ToArray()).ToList();
         }
        
       
@@ -311,12 +316,10 @@ namespace TestGenerator
         /// <param name="testSetSize">Rozmiar zbioru testowego</param>
         /// <param name="trainingSetLongWordsCount">Liczba "długich" słów w zbiorze treningowym</param>
         /// <param name="shortWords">Lista "krótkich" słów</param>
-        /// <param name="randomWords">Lista "długich" słów generowanych losowo</param>
-        private void GenerateSets(Machine m, int testSetSize, int trainingSetLongWordsCount, List<int[]> shortWords, List<int[]> randomWords)
+        /// <param name="longWords">Lista "długich" słów generowanych losowo</param>
+        private void GenerateSets(Machine m, int testSetSize, int trainingSetLongWordsCount, List<int[]> shortWords, List<int[]> longWords)
         {
             var Comparer = new WordPairEqualityComparer();
-            var allWords = shortWords.Concat(randomWords).ToArray();
-            AllWords = allWords.ToList();
             var trainingSet = new Dictionary<Tuple<int[], int[]>, bool>(Comparer);
 
             // Zbiór treningowy - generowanie wszystkich słów krótkich
@@ -334,7 +337,7 @@ namespace TestGenerator
             {
                 var pair = new Tuple<int[], int[]>(null, null);
                 while (Comparer.Equals(pair.Item2, pair.Item1) || trainingSet.ContainsKey(pair))
-                    pair = new Tuple<int[], int[]>(allWords[rand.Next(allWords.Length)], allWords[rand.Next(allWords.Length)]);
+                    pair = new Tuple<int[], int[]>(longWords[rand.Next(longWords.Count)], longWords[rand.Next(longWords.Count)]);
                 var rel = m.AreWordsInRelation(pair.Item1, pair.Item2);
                 trainingSet.Add(pair, rel);
             }
@@ -344,8 +347,8 @@ namespace TestGenerator
             for (int i = 0; i < testSetSize; i++)
             {
                 var pair = new Tuple<int[], int[]>(null, null);
-                while (Comparer.Equals(pair.Item2, pair.Item1) || testSet.ContainsKey(pair)||trainingSet.ContainsKey(pair))
-                    pair = new Tuple<int[], int[]>(allWords[rand.Next(allWords.Length)], allWords[rand.Next(allWords.Length)]);
+                while (Comparer.Equals(pair.Item2, pair.Item1) || testSet.ContainsKey(pair) || trainingSet.ContainsKey(pair))
+                    pair = new Tuple<int[], int[]>(longWords[rand.Next(longWords.Count)], longWords[rand.Next(longWords.Count)]);
                 var rel = m.AreWordsInRelation(pair.Item1, pair.Item2);
                 testSet.Add(pair, rel);
             }
