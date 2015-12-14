@@ -233,16 +233,17 @@ namespace TestGenerator
         /// Konstruktor klasy TestSets
         /// </summary>
         /// <param name="m">Automat</param>
-        /// <param name="thoroughCount"></param>
-        /// <param name="randomCount"></param>
-        /// <param name="controlCount">Wielkość zbioru kontrolnego</param>
-        public TestSets(Machine m, int thoroughCount = 5, int randomCount = 50, int controlCount = 500):this(new Dictionary<Tuple<int[], int[]>, bool>(), new Dictionary<Tuple<int[], int[]>, bool>(), m)
+        /// <param name="shortWordMaxLength">Maksymalna długość "krótkiego" słowa</param>
+        /// <param name="trainingSetLongWordsCount">Liczba "długich" słów w zbiorze treningowym</param>
+        /// <param name="testSetSize">Wielkość zbioru testowego</param>
+        public TestSets(Machine m, int shortWordMaxLength = 4, int trainingSetLongWordsCount = 303810, int testSetSize = 607620)
+            : this(new Dictionary<Tuple<int[], int[]>, bool>(), new Dictionary<Tuple<int[], int[]>, bool>(), m)
         {
             List<int[]> shortWords;
             List<int[]> longWords;
-            GenerateAllWords(thoroughCount, randomCount + controlCount, m, out shortWords, out longWords);
-            longWords = GenerateRandomConcats(longWords, randomCount, m);
-            GenerateSets(m, controlCount, randomCount, shortWords, longWords);
+            GenerateAllWords(shortWordMaxLength, trainingSetLongWordsCount + testSetSize, m, out shortWords, out longWords);
+            longWords = GenerateRandomConcats(longWords, trainingSetLongWordsCount, m);
+            GenerateSets(m, testSetSize, trainingSetLongWordsCount, shortWords, longWords);
         }
 
        /// <summary>
@@ -307,11 +308,11 @@ namespace TestGenerator
         /// Metoda łączy słowa w pary
         /// </summary>
         /// <param name="m">Automat</param>
-        /// <param name="controlCount">Rozmiar zbioru kontrolnego</param>
-        /// <param name="testCount">Rozmiar zbioru testowego</param>
-        /// <param name="shortWords">Lista krótkich słów</param>
-        /// <param name="randomWords">Lista długich słów generowanych losowo</param>
-        private void GenerateSets(Machine m, int controlCount, int testCount, List<int[]> shortWords, List<int[]> randomWords)
+        /// <param name="testSetSize">Rozmiar zbioru testowego</param>
+        /// <param name="trainingSetLongWordsCount">Liczba "długich" słów w zbiorze treningowym</param>
+        /// <param name="shortWords">Lista "krótkich" słów</param>
+        /// <param name="randomWords">Lista "długich" słów generowanych losowo</param>
+        private void GenerateSets(Machine m, int testSetSize, int trainingSetLongWordsCount, List<int[]> shortWords, List<int[]> randomWords)
         {
             var Comparer = new WordPairEqualityComparer();
             var allWords = shortWords.Concat(randomWords).ToArray();
@@ -329,7 +330,7 @@ namespace TestGenerator
                 }
 
             // Zbiór treningowy - generowanie słów długich
-            for (int i = 0; i < testCount; i++)
+            for (int i = 0; i < trainingSetLongWordsCount; i++)
             {
                 var pair = new Tuple<int[], int[]>(null, null);
                 while (Comparer.Equals(pair.Item2, pair.Item1) || trainingSet.ContainsKey(pair))
@@ -340,7 +341,7 @@ namespace TestGenerator
 
             // Zbiór testowy - generowanie słów długich
             var testSet = new Dictionary<Tuple<int[], int[]>, bool>(Comparer);
-            for (int i = 0; i < controlCount; i++)
+            for (int i = 0; i < testSetSize; i++)
             {
                 var pair = new Tuple<int[], int[]>(null, null);
                 while (Comparer.Equals(pair.Item2, pair.Item1) || testSet.ContainsKey(pair)||trainingSet.ContainsKey(pair))
@@ -348,6 +349,7 @@ namespace TestGenerator
                 var rel = m.AreWordsInRelation(pair.Item1, pair.Item2);
                 testSet.Add(pair, rel);
             }
+
             TrainingSet = trainingSet;
             TestSet = testSet;
         }

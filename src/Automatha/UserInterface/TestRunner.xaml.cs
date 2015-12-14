@@ -1,17 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using LanguageProcessor;
 using Microsoft.Win32;
 using TestGenerator;
@@ -79,11 +68,11 @@ namespace UserInterface
 
             errbuf = "";
             bool flag = int.TryParse(RandomTestTextBox.Text, out N);
-            if (!flag) errbuf += " Losowe testy";
+            if (!flag) errbuf += " Liczba długich słów";
             bool flag1 = int.TryParse(ControlTestBox.Text, out M);
-            if (!flag1) errbuf += " Dokładne testy";
+            if (!flag1) errbuf += " Rozmiar zbioru testowego";
             bool flag2 = int.TryParse(ThoroughTestTextBox.Text, out P);
-            if (!flag2) errbuf += " Kontrolne testy";
+            if (!flag2) errbuf += " Maksymalna długość krótkiego słowa";
             if (!(flag1 && flag2 && flag)) return false;
             random = N;
             control = M;
@@ -100,7 +89,6 @@ namespace UserInterface
                 set = value;
                 NotifyPropertyChanged("TestsReady");
             }
-           
         }
 
         private void TextBoxHandler(object sender, EventArgs e)
