@@ -31,14 +31,14 @@
                 <TextBlock Grid.Row ="0" Grid.Column="1" Text="{Binding ParticleCount}" Margin="4" VerticalAlignment="Center" MinWidth="30"/>
                 <TextBlock Grid.Row ="1" Margin="4" HorizontalAlignment="Right">Aktualnie przetwarzana ilość stanów:</TextBlock>
                 <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding State}" Margin="4"/>
-                <TextBlock Grid.Row ="3" Margin="4" HorizontalAlignment="Right">% Błędnie przetworzonych (grupa ucząca):</TextBlock>
-                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding BestError}" Margin="4"/>
-                <TextBlock Grid.Row ="2" Margin="4" HorizontalAlignment="Right">Błędnie przetworzone pary (grupa ucząca):</TextBlock>
-                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding BestErrorAbsolute}" Margin="4"/>
-                <TextBlock Grid.Row ="5" Margin="4" HorizontalAlignment="Right">% Błędnie przetworzonych (grupa testowa):</TextBlock>
-                <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding ErrorCG}" Margin="4"/>
-                <TextBlock Grid.Row ="4" Margin="4" HorizontalAlignment="Right">Błędnie przetworzone pary (grupa testowa):</TextBlock>
-                <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding ErrorAbsoluteCG}" Margin="4"/>
+                <TextBlock Grid.Row ="3" Margin="4" HorizontalAlignment="Right">% Błędnie przetworzonych (zbiór treningowy):</TextBlock>
+                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding TrainingSetError}" Margin="4"/>
+                <TextBlock Grid.Row ="2" Margin="4" HorizontalAlignment="Right">Błędnie przetworzone pary (zbiór treningowy):</TextBlock>
+                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding TrainingSetAbsoluteError}" Margin="4"/>
+                <TextBlock Grid.Row ="5" Margin="4" HorizontalAlignment="Right">% Błędnie przetworzonych (zbiór testowy):</TextBlock>
+                <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding TestSetError}" Margin="4"/>
+                <TextBlock Grid.Row ="4" Margin="4" HorizontalAlignment="Right">Błędnie przetworzone pary (zbiór testowy):</TextBlock>
+                <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding TestSetAbsoluteError}" Margin="4"/>
             </Grid>
             <Button Grid.Column="3" VerticalAlignment="Center" Padding="2" Margin="4" Visibility="{Binding LogVisible}" Click="CompareMachines_Click">Porównaj automaty</Button>
             <Button Grid.Column="1" VerticalAlignment="Center" Padding="2" Margin="4" Visibility="{Binding LogVisible}" Click="CreateLog_Click">Stwórz log</Button>

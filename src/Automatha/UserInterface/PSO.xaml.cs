@@ -6,20 +6,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using LanguageProcessor;
 using PSO;
 using TestGenerator;
-using System.Threading;
 using Microsoft.Win32;
 using System.IO;
 using System.Diagnostics;
-using System.Windows.Media.Animation;
 
 namespace UserInterface
 {
@@ -39,7 +31,8 @@ namespace UserInterface
         {
             get { return particleCount; }
         }
-        public PSO(double Omega,double OmegaLocal,double OmegaGlobal,int ParticleCount,TestSets set,Machine Base,int MaxStates=15,double DeathChance=0.003,int ProgressCount = 5)
+        public PSO(double Omega, double OmegaLocal, double OmegaGlobal, int ParticleCount, TestSets set, 
+            Machine Base, int MaxStates=15, double DeathChance=0.003, int ProgressCount = 5)
         {
             this.ProgressCount = ProgressCount;
             this.DeathChance = DeathChance;
@@ -47,10 +40,10 @@ namespace UserInterface
             machine2 = GenerateMachineRepresentation(Base);
             this.particleCount = ParticleCount;
             InitializeComponent();
-            TestCount = set.TestSet.Count;
+            TestCount = set.TrainingSet.Count;
             DataContext = this;
             this.set = set;
-            MachinePSO.Initialize(set.TestSet.Keys.ToList(), (w1, w2) => (set.TestSet[new Tuple<int[], int[]>(w1, w2)]), MaxStates, Base.alphabet, set.AllWords);
+            MachinePSO.Initialize(set.TrainingSet.Keys.ToList(), (w1, w2) => (set.TrainingSet[new Tuple<int[], int[]>(w1, w2)]), MaxStates, Base.alphabet, set.AllWords);
             MachinePSO.InputParameters(Omega, OmegaLocal, OmegaGlobal);
         }
         public void NotifyPropertyChanged(string propertyName)
@@ -87,42 +80,41 @@ namespace UserInterface
             }
         }
 
-        public float BestError
+        public float TrainingSetError
         {
-            get { return BestErrorAbsolute == int.MaxValue ? 100 : 100f * (float)BestErrorAbsolute / TestCount; }
+            get { return TrainingSetAbsoluteError == int.MaxValue ? 100 : 100f * (float)TrainingSetAbsoluteError / TestCount; }
         }
-        private float bestErrorAbs;
-        public float BestErrorAbsolute
+        private float _trainingSetAbsoluteErrorAbs;
+        public float TrainingSetAbsoluteError
         {
-            //get { return MachinePSO.BestError; }
-            get { return bestErrorAbs; }
+            get { return _trainingSetAbsoluteErrorAbs; }
             set
             {
-                bestErrorAbs = value;
-                NotifyPropertyChanged("BestError");
-                NotifyPropertyChanged("BestErrorAbsolute");
+                _trainingSetAbsoluteErrorAbs = value;
+                NotifyPropertyChanged("TrainingSetError");
+                NotifyPropertyChanged("TrainingSetAbsoluteError");
             }
         }
 
-        private string errorCg = "";
-        public string ErrorCG
+        private string _testSetError = "";
+        public string TestSetError
         {
-            get { return errorCg; }
+            get { return _testSetError; }
             set
             {
-                errorCg = value;
-                NotifyPropertyChanged("ErrorCG");
+                _testSetError = value;
+                NotifyPropertyChanged("TestSetError");
             }
         }
 
-        private string errorAbsCg = "";
-        public string ErrorAbsoluteCG
+        private string _testSetAbsoluteErrorAbsCg = "";
+        public string TestSetAbsoluteError
         {
-            get { return errorAbsCg; }
+            get { return _testSetAbsoluteErrorAbsCg; }
             set
             {
-                errorAbsCg = value;
-                NotifyPropertyChanged("ErrorAbsoluteCG");
+                _testSetAbsoluteErrorAbsCg = value;
+                NotifyPropertyChanged("TestSetAbsoluteError");
             }
         }
 
@@ -174,21 +166,14 @@ namespace UserInterface
             int state = State;
             int pCount = particleCount;
 
-    DateTime StartTime = DateTime.Now;
-            BestErrorAbsolute = TestCount;
+            DateTime StartTime = DateTime.Now;
+            TrainingSetAbsoluteError = TestCount;
             MachinePSO.BestErrorChanged += MachinePSO_BestErrorChanged;
             for (iteration = MachinePSO.Iterate(state, pCount, ProgressCount, DeathChance);
                 await iteration;
                 iteration = MachinePSO.Iterate(state, pCount, ProgressCount, DeathChance))
 
             {
-                //PropertyChanged -= PSO_PropertyChanged;
-
-                //NotifyPropertyChanged("BestError");
-                //NotifyPropertyChanged("BestErrorAbsolute");
-
-                //UpdateResultTable();
-                //PropertyChanged += PSO_PropertyChanged;
                 State++;
                 state = State;
                 if (ClosingRequested)
@@ -199,19 +184,19 @@ namespace UserInterface
             }
 
             MachinePSO.BestErrorChanged -= MachinePSO_BestErrorChanged;
-              DateTime EndTime = DateTime.Now;
+            DateTime EndTime = DateTime.Now;
             MessageBox.Show("Calculation finished " + (EndTime - StartTime).ToString(), "Message", MessageBoxButton.OK, MessageBoxImage.Information);
 
             LogVisible = Visibility.Visible;
             double per;
-            int err = MachinePSO.PerformTest(set.ControlSet, out per);
-            ErrorCG = per.ToString();
-            ErrorAbsoluteCG = err.ToString();
+            int err = MachinePSO.PerformTest(set.TestSet, out per);
+            TestSetError = per.ToString();
+            TestSetAbsoluteError = err.ToString();
         }
 
         private void MachinePSO_BestErrorChanged(object sender, EventArgs e)
         {
-            BestErrorAbsolute = MachinePSO.BestError;
+            TrainingSetAbsoluteError = MachinePSO.BestError;
             UpdateResultTable();
         }
 

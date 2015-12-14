@@ -34,7 +34,6 @@ namespace TestGenerator
 
         private class WordPairEqualityComparer : IEqualityComparer<Tuple<int[],int[]>>
         {
-
             public bool Equals(int[] t1, int[] t2)
             {
                 if (t1 == null && t2 == null) return true;
@@ -61,22 +60,21 @@ namespace TestGenerator
         /// <summary>
         /// Konstruktor tworzący TestSets
         /// </summary>
-        /// <param name="testSet">Zbiór testowy</param>
-        /// <param name="controlSet">Zbiór kontrolny</param>
+        /// <param name="trainingSet">Zbiór testowy</param>
+        /// <param name="testSet">Zbiór kontrolny</param>
         /// <param name="m">Automat zawierajacy alfabet testu</param>
-        private TestSets(Dictionary<Tuple<int[], int[]>, bool> testSet, Dictionary<Tuple<int[], int[]>, bool> controlSet, Machine m)
+        private TestSets(Dictionary<Tuple<int[], int[]>, bool> trainingSet, Dictionary<Tuple<int[], int[]>, bool> testSet, Machine m)
         {
+            TrainingSet = trainingSet;
             TestSet = testSet;
-            ControlSet = controlSet;
             LetterCount = m.LetterCount;
-            //AllWords = TestSet.Select(x => x.Key.Item1).Concat(testSet.Select(x => x.Key.Item2)).Distinct().ToList();
             AllWords = GetAllWords();
         }
 
         private List<int[]> GetAllWords()
         {
-            var allWords = TestSet.Keys.ToArray().Select(x => x.Item1).ToList();
-            var p = TestSet.Keys.ToArray().Select(x => x.Item2).Where(x => !allWords.Contains(x, new WordEqualityComparer())).ToList();
+            var allWords = TrainingSet.Keys.ToArray().Select(x => x.Item1).ToList();
+            var p = TrainingSet.Keys.ToArray().Select(x => x.Item2).Where(x => !allWords.Contains(x, new WordEqualityComparer())).ToList();
             allWords = allWords.Concat(p).ToList();
             return allWords;
         }
@@ -95,9 +93,8 @@ namespace TestGenerator
             {
                 try
                 {
-
                     var filetext = reader.ReadToEnd();
-                    var localSets = filetext.Split(new string[] { "!!TestSet:", "!!ControlSet:" }, StringSplitOptions.RemoveEmptyEntries);
+                    var localSets = filetext.Split(new string[] { "!!TrainingSet:", "!!TestSet:" }, StringSplitOptions.RemoveEmptyEntries);
                     if (localSets.Length != 2) throw new ArgumentException("Wrong paragraph format");
                     var testSet = ParseSets(localSets[0]);
                     var controlSet = ParseSets(localSets[1]);
@@ -175,13 +172,11 @@ namespace TestGenerator
             {
                 try
                 {
-
-                    //var filetext = reader.ReadToEnd();
                     var sb = new StringBuilder();
+                    sb.AppendLine("!!TrainingSet:");
+                    sb.AppendLine(ConvertToString(TrainingSet));
                     sb.AppendLine("!!TestSet:");
                     sb.AppendLine(ConvertToString(TestSet));
-                    sb.AppendLine("!!ControlSet:");
-                    sb.AppendLine(ConvertToString(ControlSet));
                     writer.Write(sb.ToString());
                     result = true;
 
@@ -221,7 +216,7 @@ namespace TestGenerator
         /// <summary>
         /// Zbiór testowy
         /// </summary>
-        public Dictionary<Tuple<int[], int[]>, bool> TestSet
+        public Dictionary<Tuple<int[], int[]>, bool> TrainingSet
         { get; private set; }
 
         public List<int[]> AllWords
@@ -230,7 +225,7 @@ namespace TestGenerator
         /// <summary>
         /// Zbiór kontrolny
         /// </summary>
-        public Dictionary<Tuple<int[], int[]>, bool> ControlSet
+        public Dictionary<Tuple<int[], int[]>, bool> TestSet
         { get; private set; }
         Random rand = new Random();
 
@@ -260,18 +255,17 @@ namespace TestGenerator
         {
             shortWords = new List<int[]>();
             longWords = new List<int[]>();
-            //var all = new List<int[]> { new int[0] };
             var previousStep = new List<int[]>();
             var actualStep = new List<int[]>() { new int[0] };
-            //Do słów długości wordLength
+            // Do słów długości wordLength
             for (int i = 1; i <= wordLength + 1 || actualStep.Count < longWordsCount; i++)
             {
                 previousStep.AddRange(actualStep);
                 actualStep.Clear();
-                //Dodanie j-tej litery
+                // Dodanie j-tej litery
                 for (int j = 0; j < LetterCount; j++)
                 {
-                    //na koniec k-tego słowa
+                    // Na koniec k-tego słowa
                     for (int k = 0; k < previousStep.Count; k++)
                     {
                         var nArr = new int[previousStep[k].Length + 1];
@@ -322,59 +316,40 @@ namespace TestGenerator
             var Comparer = new WordPairEqualityComparer();
             var allWords = shortWords.Concat(randomWords).ToArray();
             AllWords = allWords.ToList();
-            var testSetTemp = new Dictionary<Tuple<int[], int[]>, bool>(Comparer);
-            for (int i=0; i<shortWords.Count; i++)
-                for(int j=i+1; j<shortWords.Count; j++)
+            var trainingSet = new Dictionary<Tuple<int[], int[]>, bool>(Comparer);
+
+            // Zbiór treningowy - generowanie wszystkich słów krótkich
+            for (int i = 0; i < shortWords.Count; i++)
+                for (int j = i+1; j < shortWords.Count; j++)
                 {
                     var rel = m.AreWordsInRelation(shortWords[i], shortWords[j]);
                     var w1 = shortWords[i];
                     var w2 = shortWords[j];
-                    testSetTemp.Add(new Tuple<int[], int[]>(w1, w2), rel);
-                    //testSetTemp.Add(new Tuple<string, string>(w2, w1), rel);
+                    trainingSet.Add(new Tuple<int[], int[]>(w1, w2), rel);
                 }
-            for (
-                int i = 0; i < testCount; i++)
+
+            // Zbiór treningowy - generowanie słów długich
+            for (int i = 0; i < testCount; i++)
             {
                 var pair = new Tuple<int[], int[]>(null, null);
-                while (Comparer.Equals(pair.Item2,pair.Item1) || testSetTemp.ContainsKey(pair) )
+                while (Comparer.Equals(pair.Item2, pair.Item1) || trainingSet.ContainsKey(pair))
                     pair = new Tuple<int[], int[]>(allWords[rand.Next(allWords.Length)], allWords[rand.Next(allWords.Length)]);
                 var rel = m.AreWordsInRelation(pair.Item1, pair.Item2);
-                testSetTemp.Add(pair, rel);
-                //testSetTemp.Add(Inverse(pair), rel);
+                trainingSet.Add(pair, rel);
             }
-            
-            var controlSetTemp = new Dictionary<Tuple<int[], int[]>, bool>(Comparer);
+
+            // Zbiór testowy - generowanie słów długich
+            var testSet = new Dictionary<Tuple<int[], int[]>, bool>(Comparer);
             for (int i = 0; i < controlCount; i++)
             {
                 var pair = new Tuple<int[], int[]>(null, null);
-                while (Comparer.Equals(pair.Item2, pair.Item1) || controlSetTemp.ContainsKey(pair)||testSetTemp.ContainsKey(pair))
+                while (Comparer.Equals(pair.Item2, pair.Item1) || testSet.ContainsKey(pair)||trainingSet.ContainsKey(pair))
                     pair = new Tuple<int[], int[]>(allWords[rand.Next(allWords.Length)], allWords[rand.Next(allWords.Length)]);
                 var rel = m.AreWordsInRelation(pair.Item1, pair.Item2);
-                controlSetTemp.Add(pair, rel);
-                //controlSetTemp.Add(Inverse(pair), rel);
+                testSet.Add(pair, rel);
             }
-            /*
-             * /
-            while(testSetTemp.Count>0)
-            {
-                var key = testSetTemp.Keys.First();
-                var it1 = m.alphabet.Translate(key.Item1).ToArray();
-                var it2 = m.alphabet.Translate(key.Item2).ToArray();
-                TestSet.Add(new Tuple<int[], int[]>(it1, it2), testSetTemp[key]);
-                testSetTemp.Remove(key);
-              
-            }*/
-            /*
-            foreach (var keyVal in controlSetTemp)
-            {
-                var it1 = m.alphabet.Translate(keyVal.Key.Item1).ToArray();
-                var it2 = m.alphabet.Translate(keyVal.Key.Item2).ToArray();
-                ControlSet.Add(new Tuple<int[], int[]>(it1, it2), keyVal.Value);
-            }
-             */
-            TestSet = testSetTemp;
-            ControlSet = controlSetTemp;
-            //AllWords = GetAllWords();
+            TrainingSet = trainingSet;
+            TestSet = testSet;
         }
     }
 }
