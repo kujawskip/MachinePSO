@@ -1,7 +1,7 @@
 ﻿<Window x:Class="UserInterface.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="400" Width="525">
+        Title="PSO - TAiO" Height="400" Width="525">
     <Window.Resources>
         <Style x:Key="TextBoxStyle" TargetType="TextBox" >
             <EventSetter Event="LostKeyboardFocus" Handler="TextBoxHandler"></EventSetter>
@@ -22,7 +22,7 @@
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <Button Grid.RowSpan="1" Grid.ColumnSpan="4" Click="Button_Click" Margin="4" Padding="2">Zatwierdz Parametry</Button>
+            <Button Grid.RowSpan="1" Grid.ColumnSpan="4" Click="Button_Click" Margin="4" Padding="2">Zatwierdz parametry</Button>
             <Button Grid.Row ="1" Click="Button_Click_1" Height="20"  Margin="4" Padding="2">Wczytaj automat</Button>
             <Button Grid.Row ="2" IsEnabled="{Binding InputLoaded}" Height="20" Click="Button_Click_2" Margin="4" Padding="2">Generuj zbiory</Button>
             <Button Grid.Row ="3" IsEnabled="{Binding ReadyToStart}" Click="Button_Click_3" Margin="4" Padding="2">Rozpocznij PSO</Button>

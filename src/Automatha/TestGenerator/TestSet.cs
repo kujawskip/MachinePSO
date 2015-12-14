@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace TestGenerator
 { 
@@ -22,7 +21,9 @@ namespace TestGenerator
                 if (t1 == null && t2 == null) return true;
                 if (t1 == null || t2 == null) return false;
                 if (t1.Length != t2.Length) return false;
-                for (int i = 0; i < t1.Length; i++) if (t1[i] != t2[i]) return false;
+                for (int i = 0; i < t1.Length; i++) 
+                    if (t1[i] != t2[i]) 
+                        return false;
                 return true;
             }
 
@@ -39,7 +40,9 @@ namespace TestGenerator
                 if (t1 == null && t2 == null) return true;
                 if (t1 == null || t2 == null) return false;
                 if (t1.Length != t2.Length) return false;
-                for (int i = 0; i < t1.Length; i++) if (t1[i] != t2[i]) return false;
+                for (int i = 0; i < t1.Length; i++) 
+                    if (t1[i] != t2[i]) 
+                        return false;
                 return true;
             }
 
@@ -179,7 +182,6 @@ namespace TestGenerator
                     sb.AppendLine(ConvertToString(TestSet));
                     writer.Write(sb.ToString());
                     result = true;
-
                 }
                 catch (Exception e)
                 {
@@ -300,9 +302,7 @@ namespace TestGenerator
             {
                 var w = "";
                 while (res.Contains(w) || wordsSet.Contains(w))
-                {
                     w = wordsArray[rand.Next(wordsCount)] + wordsArray[rand.Next(wordsCount)];
-                }   
                 res.Add(w);
             }
             return res.Select(x => alphabet.Translate(x).ToArray()).ToList();

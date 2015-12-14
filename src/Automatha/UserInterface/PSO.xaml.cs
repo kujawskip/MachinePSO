@@ -222,7 +222,6 @@ namespace UserInterface
 
         private void CreateLog(string fileName)
         {
-
             try
             {
                 using (var writer = new StreamWriter(fileName, false, Encoding.UTF8))
@@ -256,11 +255,9 @@ namespace UserInterface
                 darray = RemoveUnAccessible(darray);
                 darray = ReorderAccordingTo(darray,Base.stateFunction);
                 machine1 = GenerateMachineRepresentation(new Machine(Base.alphabet, darray));
-
             }
             MachineComparer mc = new MachineComparer(machine2,machine1);
             mc.ShowDialog();
-
         }
         private int GetMinEdge(int a, double[,] d)
         {
@@ -313,15 +310,12 @@ namespace UserInterface
 
         private void Swap(ref double[,] d, int a, int b)
         {
-            
             for (int i = 0; i < d.GetLength(1); i++)
             {
                var t = d[a, i];
                 d[a, i] = d[b, i];
                 d[b, i] = t;
             }
-            
-
         }
         private double[,] ReorderAccordingTo(double[,] darray, double[,] p,int times=3)
         {

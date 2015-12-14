@@ -132,7 +132,6 @@ namespace UserInterface
             {
                 Set = new TestSets(Automaton);
             }
-
         }
 
         private void Button_Generate(object sender, RoutedEventArgs e)
@@ -145,26 +144,16 @@ namespace UserInterface
                 MessageBoxButton btnMessageBox = MessageBoxButton.YesNo;
                 MessageBoxImage icnMessageBox = MessageBoxImage.Warning;
 
-                MessageBoxResult rsltMessageBox = MessageBox.Show(sMessageBoxText, sCaption, btnMessageBox,
-                    icnMessageBox);
-
+                MessageBoxResult rsltMessageBox = MessageBox.Show(sMessageBoxText, sCaption, btnMessageBox, icnMessageBox);
                 switch (rsltMessageBox)
                 {
                     case MessageBoxResult.Yes:
-
                         break;
-
                     case MessageBoxResult.No:
                         return;
-
-
-
                 }
             }
             GenerateTests();
-               
-                
-            
         }
 
         private void Button_AcceptGenerated(object sender, RoutedEventArgs e)
