@@ -235,25 +235,29 @@ namespace UserInterface
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
-            int genStates;
             int numLetters = 5;
+            int numFiles = 10;
+            int genStates;
             int.TryParse(GenStatesTextBox.Text, out genStates);
-            string path = String.Format("C:\\Automaty\\stany - {0}\\new.txt", genStates);
-
+            
             Random random = new Random();
-            using (var writer = new StreamWriter(path, false, Encoding.UTF8))
+            for (var fileCount = 1; fileCount <= numFiles; ++fileCount)
             {
-                var sb = new StringBuilder();
-                sb.AppendLine(String.Format("{0},{1}", genStates, numLetters));
-                for (var state = 1; state <= genStates; ++state)
+                string path = String.Format("C:\\Automaty\\stany - {0}\\{1}.txt", genStates, fileCount);
+                using (var writer = new StreamWriter(path, false, Encoding.UTF8))
                 {
-                    for (var letter = 1; letter <= numLetters; ++letter)
+                    var sb = new StringBuilder();
+                    sb.AppendLine(String.Format("{0},{1}", genStates, numLetters));
+                    for (var state = 1; state <= genStates; ++state)
                     {
-                        var randomState = random.Next(1, genStates + 1);
-                        sb.AppendLine(String.Format("{0},{1},{2}", state, letter, randomState));
+                        for (var letter = 1; letter <= numLetters; ++letter)
+                        {
+                            var randomState = random.Next(1, genStates + 1);
+                            sb.AppendLine(String.Format("{0},{1},{2}", state, letter, randomState));
+                        }
                     }
+                    writer.Write(sb.ToString());
                 }
-                writer.Write(sb.ToString());
             }
         }
     }
