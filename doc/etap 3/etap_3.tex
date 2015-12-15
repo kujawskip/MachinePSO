@@ -18,18 +18,90 @@
 
 \section{Dokumentacja techniczna rozwiązania}
 
+
+\subsection{Szczegóły implementacyjne}
+
+Rozwiązanie zostało zaimplementowane w języku $C\#$ z wykorzystaniem technologii \emph{WPF} do stworzenia środowiska graficznego (\emph{GUI}). Nie były wykorzystywane żadne dodatkowe, zewnętrzne biblioteki.
+\\
+\\
+Projekt został podzielony na 4 moduły opisane poniżej.
+
+\subsubsection*{UserInterface}
+Moduł zawiera implementację \emph{GUI} w technologii \emph{WPF} oraz klasy pomocnicze wspomagające interakcję z użytkownikiem, m.in. w celu wczytania automatu z pliku lub wprowadzenia parametrów obliczeń.
+
+\subsubsection*{TestGenerator}
+Moduł zawiera klasę \emph{TestSets}, służącą do przechowywania danych zbiorów: treningowego oraz testowego. Klasa ta potrafi także generować te zbiory, a także zapisywać je do pliku i wczytywać z pliku. Na podstawie danych zawartych w tej klasie można odpowiedzieć na pytanie, czy dwa słowa są w relacji.
+
+\subsubsection*{PSO}
+Moduł zawiera klasę \emph{MachinePSO} zawierającą główną pętlę algorytmu \emph{PSO} oraz klasę \emph{Particle} będącą reprezentacją pojedynczej cząsteczki roju wykorzystywanego przez \emph{MachinePSO}.
+
+\subsubsection*{LanguageProcessor}
+Moduł zawiera klasę \emph{Machine} będącą reprezentacją odtwarzanego automatu, klasę \emph{Alphabet} zawierającą dostępne litery alfabetu wraz z funkcjami ułatwiającymi konwersję ich formatu oraz klasę pomocniczą \emph{Extensions}.
+
+\subsubsection*{LanguageProcessorTests}
+Moduł zawiera testy jednostkowe najważniejszych modułów rozwiązania.
+
+\subsection{Interfejs użytkownika}
+Po uruchomieniu programu możliwa jest modyfikacja głównych parametrów obliczeń. Oprócz podstawowych parametrów dokładniej opisanych w dokumencie z I etapu obecne są także dwa dodatkowe:
+
+\begin{itemize}
+\item Liczba cząsteczek -- parametr PSO, liczba cząsteczek w roju
+\item Waga prędkosci -- parametr PSO, wpływ poprzedniej prędkosci podczas ustalania kolejnej
+\item Waga lokalna -- parametr PSO, wplyw najlepszego rozwiązania danej cząsteczki podczas ustalania nowej prędkosci
+\item Waga globalna -- parametr PSO, wplyw najlepszego rozwiązania z całego roju podczas ustalania nowej prędkosci
+\item Szansa śmierci cząsteczki -- cząsteczka z podanym prawdopodobieństwem może umrzeć w czasie każdego wykonywanego kroku i zostać zastąpioną nową, losową cząsteczką
+\item Cząsteczki przekazane do następnej iteracji -- liczba cząsteczek z $n$-tej iteracji, które zostaną przekazane do $n+1$-szej iteracji, gdzie $n$, to liczba stanów poszukiwanego automatu
+\item Maksymalna liczba stanow -- maksymalna licbza stanów rekonstruowanego automatu
+\end{itemize}
+
+Parametry należy zatwierdzić przyciskiem \emph{Zatwierdź parametry}. Następnie należy kliknąć przycisk \emph{Wczytaj automat}. Pokaże się okno wyboru pliku, w którym należy wskazać plik w zdefiniowanym w zadaniu formacie. Po wczytaniu pliku należy kliknąć przycisk \emph{Generuj zbiory}.
+
+Pojawi się nowe okno umożliwiające albo wczytanie wygenerowanych wcześniej testów z pliku albo wygenerowanie nowych zbiorów testowych i treningowych.
+
+ Podczas generowania zbiorów testowych można ustalić parametry:
+
+\begin{itemize}
+\item Maksymalna długoć ,,krótkiego'' słowa -- zostaną wygenerowane wszystkie pary słów o długości niewiększej od podanego parametru
+\item Liczba długich słów (zbiór treningowy) -- liczba par losowych słów dłuższych niż parametr okreslony powyżej
+\item Rozmiar zbioru testowego -- liczba par dłuższych słów, nie bioracych udziału w procesie optymalizacji w trakcie trwania PSO
+\end{itemize}
+
+Po wygenerowaniu zbiorów lub wczytaniu ich z pliku, należy nacisnąć przycisk \emph{Akceptuj}. Po powrocie do głównego okna programu, aktywny staje się przycisk \emph{Rozpocznij PSO}; jego kliknięcie powoduje pojawienie się nowego okna, w którym można rozpocząć obliczenia. Aby to zrobić, należy kliknąć przycisk \emph{Start}. W trakcie trwania obliczeń można śledzić ich postęp. Po zakończeniu działania algorytmu pojawi się okno z komunikatem. Następnie można zapisać logi z obliczeń za pomocą przycisku \emph{Stwórz log}. Można także podejrzeć różnice pomiędzy znalezionym, a poszukiwanym automatem, za pomocą przycisku \emph{Porównaj automaty}. 
+
+\subsection{Dodatkowe funkcjonalności}
+
+\subsubsection{Zapisywanie i wczytywanie zbiorów testowych}
+Raz wygenerowane pozwalają znacznie przyspieszyć porównywanie wydajności programu dla różnych parametrów oraz zapewniają, że próby odtwarzania będą dotyczyć dokładnie tego samego automatu.
+
+\subsubsection{Równoległe wykonywanie obliczeń}
+Główna pętla programu została zaimplementowana z wykorzystaniem wątków za pomocą dostępnej w $C\#$ klasy $Task$.
+
+\subsubsection{Zapisywanie logów}
+Po wykonaniu obliczeń możliwe jest zapisanie do pliku pełnego logu zawierającego wyniki dla każdej testowanej pary słów.
+
+% TODO: to wcielić do dokuemntacji algorytmu
+\subsection{Zmiany względem I etapu -- TODO!}
+
+\subsubsection{Reprezentacja automatu w trakcie działania PSO}
+
+W części opisującej działanie algorytmu, w dokumencie z poprzedniego etapu, planowaliśmy reprezentować automat jako macierz zmiennopozycyjnych liczb. Macierz ta miała mieć zaokrąglane wartości do liczb całkowitych i na jej podstawie miał być konstruowany automat, za pomocą którego obliczana byłaby wartość funkcji błędu.
+
+Zdecydowaliśmy się jednak wprowadzić usprawnienie polegające na tym, że cząsteczka posiada automat reprezentowany przez macierz z liczbami zmiennopozycyjnymi, a są one zaokrąglanie do liczb całkowitych tylko w momencie przeprowadzania obliczenia na automacie. Dzięki temu uniknęliśmy kosztownego tworzenia nowych obiektów automatów, a w szczególności kopiowania macierzy z wartościami. Teraz obliczenia odbywają się ,,w miejscu'' z perspektywy pamięci.
+
+
+
 \section{Raport z testów}
 
 \subsection{Parametry obliczeń}
 
 \begin{itemize}
 \item Liczba liter w alfabecie: 5
-\item Liczba cząsteczek: 20
-\item Waga prędkości (inertia weight): 0,729
-\item Waga lokalna: (cognitive weight): 1,49445
-\item Waga globalna: (social weight): 1,49445	
-\item Szansa śmierci cząsteczki: 0,01
-\item Cząsteczki przekazane do następnej iteracji: 4
+\item Liczba cząsteczek: 20 (liczba wystarczająca, aby otrzymać interesujące wyniki, ale nie nazbyt duża, by nie spowolnić obliczeń)
+\item Waga prędkości (inertia weight): 0,729 (jedna z wartosci polecanej dla PSO)
+\item Waga lokalna: (cognitive weight): 1,49445 (jedna z wartosci polecanej dla PSO)
+\item Waga globalna: (social weight): 1,49445	(jedna z wartosci polecanej dla PSO)
+\item Szansa śmierci cząsteczki: 0,01 (wybrana przez nas wartosć, wieksza zaburzy algorytm, a mniejsza spowoduje znikome znaczenie tego usprawnienia)
+\item Cząsteczki przekazane do następnej iteracji: 4 (wybrana przez nas wartosć)
 \item Maksymalna liczba stanów: (różne wartosci w częsci A oraz B)
 \end{itemize}
 
