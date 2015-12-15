@@ -32,9 +32,9 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Margin="4" VerticalAlignment="Center" HorizontalAlignment="Right">Ilość cząsteczek:</TextBlock>
+                <TextBlock Margin="4" VerticalAlignment="Center" HorizontalAlignment="Right">Liczba cząsteczek:</TextBlock>
                 <TextBlock Grid.Row ="0" Grid.Column="1" Text="{Binding ParticleCount}" Margin="4" VerticalAlignment="Center" MinWidth="30"/>
-                <TextBlock Grid.Row ="1" Margin="4" HorizontalAlignment="Right">Aktualnie przetwarzana ilość stanów:</TextBlock>
+                <TextBlock Grid.Row ="1" Margin="4" HorizontalAlignment="Right">Aktualnie przetwarzana liczba stanów:</TextBlock>
                 <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding State}" Margin="4"/>
                 <TextBlock Grid.Row ="2" Margin="4" HorizontalAlignment="Right">Błędnie przetworzone pary (zbiór treningowy):</TextBlock>
                 <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding TrainingSetAbsoluteError}" Margin="4"/>

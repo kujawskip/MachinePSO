@@ -76,16 +76,23 @@ namespace PSO
             trainingSetShortError = trainingSetLongError = trainingSetShortAbsoluteError = trainingSetLongAbsoluteError = 0;
             if (trainingSet.Count == 0)
                 return;
+            int shortWordsTotal = 0;
+            int longWordsTotal = 0;
             foreach (var key in trainingSet.Keys)
             {
+                bool isLongWord = key.Item1.Length > shortWordMaxLength || key.Item2.Length > shortWordMaxLength;
+                if (isLongWord)
+                    ++longWordsTotal;
+                else
+                    ++shortWordsTotal;
                 if (trainingSet[key] == BestMachine.AreWordsInRelation(key.Item1, key.Item2)) continue;
-                if (key.Item1.Length > shortWordMaxLength || key.Item2.Length > shortWordMaxLength)
+                if (isLongWord)
                     ++trainingSetLongAbsoluteError;
                 else
                     ++trainingSetShortAbsoluteError;
             }
-            trainingSetShortError = 100 * (double)trainingSetShortAbsoluteError / trainingSet.Count;
-            trainingSetLongError = 100 * (double)trainingSetLongAbsoluteError / trainingSet.Count;
+            trainingSetShortError = 100 * (double)trainingSetShortAbsoluteError / shortWordsTotal;
+            trainingSetLongError = 100 * (double)trainingSetLongAbsoluteError / longWordsTotal;
         }
 
         /// <summary>

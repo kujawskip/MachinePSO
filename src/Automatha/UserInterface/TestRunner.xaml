@@ -25,10 +25,10 @@
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.Row="0" Grid.Column="0" Margin="4">Liczba długich słów (zbiór treningowy):</TextBlock>
-        <TextBox Grid.Row="0" Grid.Column="1" x:Name="RandomTestTextBox" Style="{StaticResource TextBoxStyle}" Margin="4" MinWidth="50" Text="303810"/>
-        <TextBlock Grid.Row="1"  Margin="4">Maksymalna długość "krótkiego" słowa:</TextBlock>
-        <TextBox Grid.Row="1" Grid.Column="1"  Name="ThoroughTestTextBox" MinWidth="50" Style="{StaticResource TextBoxStyle}" Margin="4">4</TextBox>
+        <TextBlock Grid.Row="0"  Margin="4">Maksymalna długość "krótkiego" słowa:</TextBlock>
+        <TextBox Grid.Row="0" Grid.Column="1"  Name="ThoroughTestTextBox" MinWidth="50" Style="{StaticResource TextBoxStyle}" Margin="4">4</TextBox>
+        <TextBlock Grid.Row="1" Grid.Column="0" Margin="4">Liczba długich słów (zbiór treningowy):</TextBlock>
+        <TextBox Grid.Row="1" Grid.Column="1" x:Name="RandomTestTextBox" Style="{StaticResource TextBoxStyle}" Margin="4" MinWidth="50" Text="303810"/>
         <TextBlock Grid.Row="2" Grid.Column="0" Margin="4">Rozmiar zbioru testowego</TextBlock>
         <TextBox Grid.Row="2" Grid.Column="1" x:Name="ControlTestBox" MinWidth="50" Style="{StaticResource TextBoxStyle}" Margin="4" Text="607620"/>
         <Button Grid.Row ="3" Grid.ColumnSpan="2" Click="Button_AcceptParams" Margin="4" Padding="2" Content="Zatwierdz parametry"/>
