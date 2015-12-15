@@ -20,4 +20,45 @@
 
 \section{Raport z testów}
 
+\subsection{Parametry obliczeń}
+
+\begin{itemize}
+\item Liczba liter w alfabecie: 5
+\item Liczba cząsteczek: 20
+\item Waga prędkości (inertia weight): 0,729
+\item Waga lokalna: (cognitive weight): 1,49445
+\item Waga globalna: (social weight): 1,49445	
+\item Szansa śmierci cząsteczki: 0,01
+\item Cząsteczki przekazane do następnej iteracji: 4
+\item Maksymalna liczba stanów: (różne wartosci w częsci A oraz B)
+\end{itemize}
+
+\subsection{Testy dla stałej c=4}
+Obliczenia były wkonywane dla stałej $c = 5$. A zatem:
+\begin{itemize}
+\item Liczba wszystkich słów krótkich: 780
+\item Liczba wszystkich permutacji słów krótkich: 303 810
+\item A zatem rozmiar zbioru treningowego: 607 620
+\item Rozmiar zbioru testowego: 607 620
+\end{itemize}
+
+
+\subsection{Testy dla stałej c=5}
+Nie udało się wykonać obliczeń dla stałej $c = 5$, gdyż taka wartosć ma nastepujące konsekwencje:
+\begin{itemize}
+\item Liczba wszystkich słów krótkich: 3 905
+\item Liczba wszystkich permutacji słów krótkich: 7 622 560
+\item A zatem rozmiar zbioru treningowego: 15 245 120
+\item Rozmiar zbioru testowego: 15 245 120
+\end{itemize}
+
+Powoduje to problemy z pamięcią oraz wydajnoscią. Sam proces generowania zbiorów o takiej licznosci wymaga w szczytowym momencie 10,5 GB pamięci RAM. Wymaga to bardzo mocnego komputera oraz wykonywania w rodowisku 64-bitowym.
+Niestety nawet po wygenerowaniu tak ogromnych zbiorów obliczenia trwają bardzo długo. Próbowalismy uruchomić obliczenia dla Automatu nr 2 z podpunktu A, klasa 5-stanowa. Po 25 minutach obliczeń (z wykorzystaniem 11 GB pamięci RAM), przetwarzany był ciągle automat o 2 stanach, z błędem 45\%. 
+
+Przerwalimy obliczenia, nie widząc perspektyw na ich ukończenie, a wolelimy skupić się na dokładniejszych testach dla stałej $c = 4$.
+
+\subsection{A. Rekonstrukcja automatów}
+
+\subsection{B. Aproksymacja automatów}
+
 \end{document}
