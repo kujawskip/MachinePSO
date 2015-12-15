@@ -12,7 +12,7 @@ namespace LanguageProcessor
         {
             var result = new int[array.GetLength(0), array.GetLength(1)];
             for (int i = 0; i < array.GetLength(0); i++)
-                for (int j = 0; j < array.GetLength(1); i++)
+                for (int j = 0; j < array.GetLength(1); j++)
                     result[i, j] = (int)array[i, j];
             return result;
         }
@@ -21,7 +21,7 @@ namespace LanguageProcessor
         {
             var result = new int[array.GetLength(0), array.GetLength(1)];
             for (int i = 0; i < array.GetLength(0); i++)
-                for (int j = 0; j < array.GetLength(1); i++)
+                for (int j = 0; j < array.GetLength(1); j++)
                     result[i, j] = (int)array[i, j];
             return result;
         }
