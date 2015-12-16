@@ -46,12 +46,12 @@ Po uruchomieniu programu możliwa jest modyfikacja głównych parametrów oblicz
 
 \begin{itemize}
 \item Liczba cząsteczek -- parametr PSO, liczba cząsteczek w roju
-\item Waga prędkosci -- parametr PSO, wpływ poprzedniej prędkosci podczas ustalania kolejnej
-\item Waga lokalna -- parametr PSO, wplyw najlepszego rozwiązania danej cząsteczki podczas ustalania nowej prędkosci
-\item Waga globalna -- parametr PSO, wplyw najlepszego rozwiązania z całego roju podczas ustalania nowej prędkosci
+\item Waga prędkości -- parametr PSO, wpływ poprzedniej prędkości podczas ustalania kolejnej
+\item Waga lokalna -- parametr PSO, wplyw najlepszego rozwiązania danej cząsteczki podczas ustalania nowej prędkości
+\item Waga globalna -- parametr PSO, wplyw najlepszego rozwiązania z całego roju podczas ustalania nowej prędkości
 \item Szansa śmierci cząsteczki -- cząsteczka z podanym prawdopodobieństwem może umrzeć w czasie każdego wykonywanego kroku i zostać zastąpioną nową, losową cząsteczką
 \item Cząsteczki przekazane do następnej iteracji -- liczba cząsteczek z $n$-tej iteracji, które zostaną przekazane do $n+1$-szej iteracji, gdzie $n$, to liczba stanów poszukiwanego automatu
-\item Maksymalna liczba stanow -- maksymalna licbza stanów rekonstruowanego automatu
+\item Maksymalna liczba stanów -- maksymalna liczba stanów rekonstruowanego automatu
 \end{itemize}
 
 Parametry należy zatwierdzić przyciskiem \emph{Zatwierdź parametry}. Następnie należy kliknąć przycisk \emph{Wczytaj automat}. Pokaże się okno wyboru pliku, w którym należy wskazać plik w zdefiniowanym w zadaniu formacie. Po wczytaniu pliku należy kliknąć przycisk \emph{Generuj zbiory}.
@@ -61,9 +61,9 @@ Pojawi się nowe okno umożliwiające albo wczytanie wygenerowanych wcześniej t
  Podczas generowania zbiorów testowych można ustalić parametry:
 
 \begin{itemize}
-\item Maksymalna długoć ,,krótkiego'' słowa -- zostaną wygenerowane wszystkie pary słów o długości niewiększej od podanego parametru
-\item Liczba długich słów (zbiór treningowy) -- liczba par losowych słów dłuższych niż parametr okreslony powyżej
-\item Rozmiar zbioru testowego -- liczba par dłuższych słów, nie bioracych udziału w procesie optymalizacji w trakcie trwania PSO
+\item Maksymalna długość ,,krótkiego'' słowa -- zostaną wygenerowane wszystkie pary słów o długości nie większej od podanego parametru
+\item Liczba długich słów (zbiór treningowy) -- liczba par losowych słów dłuższych niż parametr określony powyżej
+\item Rozmiar zbioru testowego -- liczba par dłuższych słów, nie biorących udziału w procesie optymalizacji w trakcie trwania PSO
 \end{itemize}
 
 Po wygenerowaniu zbiorów lub wczytaniu ich z pliku, należy nacisnąć przycisk \emph{Akceptuj}. Po powrocie do głównego okna programu, aktywny staje się przycisk \emph{Rozpocznij PSO}; jego kliknięcie powoduje pojawienie się nowego okna, w którym można rozpocząć obliczenia. Aby to zrobić, należy kliknąć przycisk \emph{Start}. W trakcie trwania obliczeń można śledzić ich postęp. Po zakończeniu działania algorytmu pojawi się okno z komunikatem. Następnie można zapisać logi z obliczeń za pomocą przycisku \emph{Stwórz log}. Można także podejrzeć różnice pomiędzy znalezionym, a poszukiwanym automatem, za pomocą przycisku \emph{Porównaj automaty}. 
@@ -79,7 +79,7 @@ Główna pętla programu została zaimplementowana z wykorzystaniem wątków za 
 \subsubsection{Zapisywanie logów}
 Po wykonaniu obliczeń możliwe jest zapisanie do pliku pełnego logu zawierającego wyniki dla każdej testowanej pary słów.
 
-% TODO: to wcielić do dokuemntacji algorytmu
+% TODO: to wcielić do dokumentacji algorytmu
 \subsection{Zmiany względem I etapu -- TODO!}
 
 \subsubsection{Reprezentacja automatu w trakcie działania PSO}
@@ -97,16 +97,16 @@ Zdecydowaliśmy się jednak wprowadzić usprawnienie polegające na tym, że cz�
 \begin{itemize}
 \item Liczba liter w alfabecie: 5
 \item Liczba cząsteczek: 20 (liczba wystarczająca, aby otrzymać interesujące wyniki, ale nie nazbyt duża, by nie spowolnić obliczeń)
-\item Waga prędkości (inertia weight): 0,729 (jedna z wartosci polecanej dla PSO)
-\item Waga lokalna: (cognitive weight): 1,49445 (jedna z wartosci polecanej dla PSO)
-\item Waga globalna: (social weight): 1,49445	(jedna z wartosci polecanej dla PSO)
-\item Szansa śmierci cząsteczki: 0,01 (wybrana przez nas wartosć, wieksza zaburzy algorytm, a mniejsza spowoduje znikome znaczenie tego usprawnienia)
-\item Cząsteczki przekazane do następnej iteracji: 4 (wybrana przez nas wartosć)
-\item Maksymalna liczba stanów: (różne wartosci w częsci A oraz B)
+\item Waga prędkości (inertia weight): 0,729 (jedna z wartości polecanej dla PSO)
+\item Waga lokalna: (cognitive weight): 1,49445 (jedna z wartości polecanej dla PSO)
+\item Waga globalna: (social weight): 1,49445	(jedna z wartości polecanej dla PSO)
+\item Szansa śmierci cząsteczki: 0,01 (wybrana przez nas wartość, większa zaburzy algorytm, a mniejsza spowoduje znikome znaczenie tego usprawnienia)
+\item Cząsteczki przekazane do następnej iteracji: 4 (wybrana przez nas wartość)
+\item Maksymalna liczba stanów: (różne wartości w części A oraz B)
 \end{itemize}
 
 \subsection{Testy dla stałej c=4}
-Obliczenia były wkonywane dla stałej $c = 5$. A zatem:
+Obliczenia były wykonywane dla stałej $c = 5$. A zatem:
 \begin{itemize}
 \item Liczba wszystkich słów krótkich: 780
 \item Liczba wszystkich permutacji słów krótkich: 303 810
@@ -116,7 +116,7 @@ Obliczenia były wkonywane dla stałej $c = 5$. A zatem:
 
 
 \subsection{Testy dla stałej c=5}
-Nie udało się wykonać obliczeń dla stałej $c = 5$, gdyż taka wartosć ma nastepujące konsekwencje:
+Nie udało się wykonać obliczeń dla stałej $c = 5$, gdyż taka wartość ma następujące konsekwencje:
 \begin{itemize}
 \item Liczba wszystkich słów krótkich: 3 905
 \item Liczba wszystkich permutacji słów krótkich: 7 622 560
@@ -124,10 +124,10 @@ Nie udało się wykonać obliczeń dla stałej $c = 5$, gdyż taka wartosć ma n
 \item Rozmiar zbioru testowego: 15 245 120
 \end{itemize}
 
-Powoduje to problemy z pamięcią oraz wydajnoscią. Sam proces generowania zbiorów o takiej licznosci wymaga w szczytowym momencie 10,5 GB pamięci RAM. Wymaga to bardzo mocnego komputera oraz wykonywania w rodowisku 64-bitowym.
-Niestety nawet po wygenerowaniu tak ogromnych zbiorów obliczenia trwają bardzo długo. Próbowalismy uruchomić obliczenia dla Automatu nr 2 z podpunktu A, klasa 5-stanowa. Po 25 minutach obliczeń (z wykorzystaniem 11 GB pamięci RAM), przetwarzany był ciągle automat o 2 stanach, z błędem 45\%. 
+Powoduje to problemy z pamięcią oraz wydajnością. Sam proces generowania zbiorów o takiej liczności wymaga w szczytowym momencie 10,5 GB pamięci RAM. Wymaga to bardzo mocnego komputera oraz wykonywania w środowisku 64-bitowym.
+Niestety nawet po wygenerowaniu tak ogromnych zbiorów obliczenia trwają bardzo długo. Próbowaliśmy uruchomić obliczenia dla Automatu nr 2 z podpunktu A, klasa 5-stanowa. Po 25 minutach obliczeń (z wykorzystaniem 11 GB pamięci RAM), przetwarzany był ciągle automat o 2 stanach, z błędem 45\%. 
 
-Przerwalimy obliczenia, nie widząc perspektyw na ich ukończenie, a wolelimy skupić się na dokładniejszych testach dla stałej $c = 4$.
+Przerwaliśmy obliczenia, nie widząc perspektyw na ich ukończenie, a woleliśmy skupić się na dokładniejszych testach dla stałej $c = 4$.
 
 \subsection{A. Rekonstrukcja automatów}
 
