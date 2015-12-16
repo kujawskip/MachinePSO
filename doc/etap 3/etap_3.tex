@@ -7,6 +7,8 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 %\usepackage{hyperref} % powoduje buga w LLNCS i nie możemy go użyć :(
+\usepackage{graphicx}
+\graphicspath{ {wykresy/} }
 \begin{document}
 
 \title{Teoria algorytmów i obliczeń -- Projekt -- Etap 3}
@@ -89,11 +91,13 @@ Sposób działania PSO przedstawiony jest za pomocą Algorytmu~\ref{alg:pso} na 
 \caption{PSO}\label{alg:pso}
 \end{algorithm}
 
+
+\newpage
+
 \subsection{Zbiór treningowy i testowy}
 
 Utworzenie zbiorów treningowego i testowego nastąpi poprzez wygenerowanie odpowiednio dużych zbiorów słów. Zbiór treningowy zawierać będzie wszystkie pary słów krótkich (długości nie większej niż parametr $c = 4$) nad danym alfabetem i losowe pary słów długich. Słowa długie zostaną wygenerowane w sposób losowy oraz poprzez (wielokrotną) konkatenację słów krótkich, a następnie w sposób losowy dobrane w pary. Zbiór testowy będzie zawierał wszystkie wygenerowane pary słów długich, które nie weszły w skład zbioru testowego. 
 
-\newpage
 
 \subsection{Dane wejściowe algorytmu}
 \begin{itemize}
@@ -121,9 +125,11 @@ W każdej iteracji prócz pierwszej do zbioru losowych cząstek dodawane są cz�
 
 W każdym kroku algorytmu PSO każda cząsteczka ma szansę ,,zginąć'', w takim wypadku nadawany jej jest losową prędkość i losowa pozycja w przestrzeni rozwiązań.Prawdopodobieństwo to opisane jest zmienną $DeathProbability$. Rozwiązanie to ma na celu minimalizację wpływu minimów lokalnych na proces przeszukiwania przestrzeni.
 
+\newpage
+
 Zmianie uległy również warunki zakończenia działania instancji PSO. PSO zwraca najlepszą wartość nie po danej ilości kroków, a po $MaxEpochs$ kroków od ostatniego zaktualizowania najlepszego kandydata na rozwiązanie. Nie spowoduje to nieskończonych obliczeń przy asymptotycznej zbieżności kolejnych kandydatów do optymalnego rozwiązania ze względu na to, że funkcja $Fitness$ przyjmuje wartości naturalne.
 
-\newpage
+
 
 \section{Dokumentacja techniczna rozwiązania}
 
@@ -148,6 +154,8 @@ Moduł zawiera klasę \emph{Machine} będącą reprezentacją odtwarzanego autom
 
 \subsubsection*{LanguageProcessorTests}
 Moduł zawiera testy jednostkowe najważniejszych modułów rozwiązania.
+
+\newpage
 
 \subsection{Interfejs użytkownika}
 Po uruchomieniu programu możliwa jest modyfikacja głównych parametrów obliczeń. Oprócz podstawowych parametrów dokładniej opisanych w dokumencie z I etapu obecne są także dwa dodatkowe:
@@ -183,9 +191,6 @@ Raz wygenerowane pozwalają znacznie przyspieszyć porównywanie wydajności pro
 
 \subsubsection{Równoległe wykonywanie obliczeń}
 Główna pętla programu została zaimplementowana z wykorzystaniem wątków za pomocą dostępnej w $C\#$ klasy $Task$.
-
-\subsubsection{Zapisywanie logów}
-Po wykonaniu obliczeń możliwe jest zapisanie do pliku pełnego logu zawierającego wyniki dla każdej testowanej pary słów.
 
 \newpage
 
@@ -228,40 +233,399 @@ Niestety nawet po wygenerowaniu tak ogromnych zbiorów obliczenia trwają bardzo
 
 Przerwaliśmy obliczenia, nie widząc perspektyw na ich ukończenie, a woleliśmy skupić się na dokładniejszych testach dla stałej $c = 4$.
 
+\newpage
 \subsection{A. Rekonstrukcja automatów}
 
-\newpage
-
-\subsection{B. Aproksymacja automatów} 
-
-\subsubsection{Aproksymacja automatów 20 stanowych} 
-
-\begin{table}[] 
+\begin{table}[]
 \centering 
-\caption{Aproksymacja za pomocą automatu o 6 stanach}  
-\begin{tabular}{| c | c | c | c | c |} 
-\hline Błąd ,,krótkich'' słów & Błąd ,,długich słów'' & Błąd łączny & Błąd zbioru testowego & Czas \\ [0.5ex] 
-\hline 21,80 & 21,91 & 21,85 & 21,94 & 15:23 \\ 
-\hline 20,78 & 20,54 & 20,66 & 20,73 & 14:34 \\ 
-\hline 20,65 & 20,61 & 20,63 & 20,71 & 14:51 \\ 
-\hline 20,93 & 20,91 & 20,92 & 21,00 & 17:08 \\ 
-\hline 21,23 & 21,17 & 21,20 & 21,12 & 14:56 \\ 
+\caption{Rekonstrukcja automatu 5-stanowego}  
+\begin{tabular}{| c | c | c | c |} 
+\hline \multicolumn{3}{| c |}{ Zbiór treningowy }  & Zbiór testowy \\
+\hline Błąd ,,krótkich'' słów [\%] & Błąd ,,długich słów'' [\%] & Błąd łączny [\%] & Błąd zbioru testowego [\%] \\ [0.5ex]  
+\hline 27,98 & 29,84 & 28,91 & 29,83 \\ 
+\hline 28,90 & 29,59 & 29,24 & 29,87 \\ 
+\hline 19,66 & 1,98 & 10,82 & 1,99 \\ 
+\hline 23,83 & 24,45 & 24,14 & 14,51 \\ 
+\hline 20,71 & 19,44 & 20,08 & 19,35 \\ 
+\hline 28,22 & 26,96 & 27,59 & 27,03 \\ 
+\hline 21,75 & 24,47 & 23,11 & 24,55 \\ 
+\hline 29,16 & 29,52 & 29,34 & 29,53 \\ 
+\hline 29,59 & 29,89 & 29,74 & 30,19 \\ 
+\hline 25,91 & 24,23 & 25,07 & 24,23 \\ 
 \hline 
 \end{tabular} 
 \end{table} 
 
+\begin{figure}[]
+\caption{Rekonstrukcja automatu 5-stanowego}%
+\includegraphics[width=\textwidth]{A5}
+\end{figure}
+
+
+\begin{table}[]
+\centering 
+\caption{Rekonstrukcja automatu 8-stanowego}  
+\begin{tabular}{| c | c | c | c |} 
+\hline \multicolumn{3}{| c |}{ Zbiór treningowy }  & Zbiór testowy \\
+\hline Błąd ,,krótkich'' słów [\%] & Błąd ,,długich słów'' [\%] & Błąd łączny [\%] & Błąd zbioru testowego [\%] \\ [0.5ex]  
+\hline 21,34 & 21,68 & 21,51 & 21,85 \\ 
+\hline 21,65 & 22,10 & 21,87 & 22,03 \\ 
+\hline 21,85 & 21,99 & 21,92 & 22,02 \\ 
+\hline 21,92 & 22,06 & 21,99 & 21,93 \\ 
+\hline 24,11 & 23,04 & 23,57 & 23,04 \\ 
+\hline 22,17 & 22,14 & 22,15 & 22,02 \\ 
+\hline 
+\end{tabular} 
+\end{table} 
+
+\begin{figure}[]
+\caption{Rekonstrukcja automatu 8-stanowego}%
+\includegraphics[width=\textwidth]{A8}
+\end{figure}
+
+
+
+\begin{table}[]
+\centering 
+\caption{Rekonstrukcja automatu 12-stanowego}  
+\begin{tabular}{| c | c | c | c |} 
+\hline \multicolumn{3}{| c |}{ Zbiór treningowy }  & Zbiór testowy \\
+\hline Błąd ,,krótkich'' słów [\%] & Błąd ,,długich słów'' [\%] & Błąd łączny [\%] & Błąd zbioru testowego [\%] \\ [0.5ex]  
+\hline 15,78 & 16,05 & 15,92 & 16,11 \\ 
+\hline 17,31 & 17,62 & 17,46 & 17,71 \\ 
+\hline 17,11 & 17,42 & 17,27 & 17,42 \\ 
+\hline 17,72 & 17,46 & 17,59 & 17,64 \\ 
+\hline 15,31 & 15,58 & 15,45 & 15,70 \\ 
+\hline 15,58 & 15,96 & 15,77 & 15,90 \\ 
+\hline 
+\end{tabular} 
+\end{table} 
+
+\begin{figure}[]
+\caption{Rekonstrukcja automatu 12-stanowego}%
+\includegraphics[width=\textwidth]{A12}
+\end{figure}
+
+\newpage
+
+\subsection{B. Aproksymacja automatów}
+
+%\FloatBarrier
+%\newpage
+\textbf{Aproksymacja automatów 20 stanowych} 
+
+\begin{table}[] 
+\centering 
+\caption{Aproksymacja za pomocą automatu o 4 stanach}  
+\begin{tabular}{| c | c | c | c |} 
+\hline \multicolumn{3}{| c |}{ Zbiór treningowy }  & Zbiór testowy \\
+\hline Błąd ,,krótkich'' słów [\%] & Błąd ,,długich słów'' [\%] & Błąd łączny [\%] & Błąd zbioru testowego [\%] \\ [0.5ex]  
+\hline 27,70 & 27,93 & 27,81 & 27,86 \\ 
+\hline 26,81 & 26,87 & 26,84 & 26,89 \\ 
+\hline 27,42 & 27,54 & 27,48 & 27,53 \\ 
+\hline 27,24 & 27,16 & 27,20 & 27,20 \\ 
+\hline 27,15 & 27,00 & 27,07 & 27,00 \\ 
+\hline 
+\end{tabular} 
+\end{table} 
+
+\begin{figure}[]
+\caption{Aproksymacja za pomocą automatu o 4 stanach}%
+\includegraphics[width=\textwidth]{B20-4}
+\end{figure}
+
+
+\begin{table}[] 
+\centering 
+\caption{Aproksymacja za pomocą automatu o 6 stanach}  
+\begin{tabular}{| c | c | c | c |} 
+\hline \multicolumn{3}{| c |}{ Zbiór treningowy }  & Zbiór testowy \\
+\hline Błąd ,,krótkich'' słów [\%] & Błąd ,,długich słów'' [\%] & Błąd łączny [\%] & Błąd zbioru testowego [\%] \\ [0.5ex]   
+\hline 21,80 & 21,91 & 21,85 & 21,94 \\ 
+\hline 20,78 & 20,54 & 20,66 & 20,73 \\ 
+\hline 20,65 & 20,61 & 20,63 & 20,71 \\ 
+\hline 20,93 & 20,91 & 20,92 & 21,00 \\ 
+\hline 21,23 & 21,17 & 21,20 & 21,12 \\ 
+\hline 
+\end{tabular} 
+\end{table} 
+
+\begin{figure}[]
+\caption{Aproksymacja za pomocą automatu o 6 stanach}%
+\includegraphics[width=\textwidth]{B20-6}
+\end{figure}
+
 \begin{table}[] 
 \centering 
 \caption{Aproksymacja za pomocą automatu o 8 stanach} 
-\begin{tabular}{| c | c | c | c | c |} 
-\hline Błąd ,,krótkich'' słów & Błąd ,,długich słów'' & Błąd łączny & Błąd zbioru testowego & Czas \\ [0.5ex] 
-\hline 18,34 & 18,23 & 18,29 & 18,26 & 13:36 \\ 
-\hline 18,18 & 18,44 & 18,31 & 18,42 & 20:21 \\ 
-\hline 17,62 & 17,48 & 17,56 & 17,46 & 23:11 \\ 
-\hline 18,73 & 18,93 & 18,83 & 18,88 & 21:15 \\ 
-\hline 17,91 & 18,31 & 18,11 & 18,26 & 19:09 \\ 
+\begin{tabular}{| c | c | c | c | } 
+\hline \multicolumn{3}{| c |}{ Zbiór treningowy }  & Zbiór testowy \\
+\hline Błąd ,,krótkich'' słów [\%] & Błąd ,,długich słów'' [\%] & Błąd łączny [\%] & Błąd zbioru testowego [\%] \\ [0.5ex]  
+\hline 18,34 & 18,23 & 18,29 & 18,26  \\ 
+\hline 18,18 & 18,44 & 18,31 & 18,42  \\ 
+\hline 17,62 & 17,48 & 17,56 & 17,46  \\ 
+\hline 18,73 & 18,93 & 18,83 & 18,88  \\ 
+\hline 17,91 & 18,31 & 18,11 & 18,26  \\ 
 \hline 
 \end{tabular} 
 \end{table}
+
+\begin{figure}[]
+\caption{Aproksymacja za pomocą automatu o 8 stanach}%
+\includegraphics[width=\textwidth]{B20-8}
+\end{figure}
+
+\begin{table}[] 
+\centering 
+\caption{Aproksymacja za pomocą automatu o 10 stanach}  
+\begin{tabular}{| c | c | c | c |} 
+\hline \multicolumn{3}{| c |}{ Zbiór treningowy }  & Zbiór testowy \\
+\hline Błąd ,,krótkich'' słów [\%] & Błąd ,,długich słów'' [\%] & Błąd łączny [\%] & Błąd zbioru testowego [\%] \\ [0.5ex]  
+\hline 14,94 & 15,54 & 15,23 & 15,40 \\ 
+\hline 14,31 & 14,54 & 14,42 & 14,53 \\ 
+\hline 14,62 & 14,37 & 15,50 & 14,49 \\ 
+\hline 14,64 & 14,89 & 14,76 & 14,84 \\ 
+\hline 14,67 & 14,70 & 14,69 & 14,84 \\ 
+\hline 
+\end{tabular} 
+\end{table} 
+
+\newpage
+
+\begin{figure}[]
+\caption{Aproksymacja za pomocą automatu o 10 stanach}%
+\includegraphics[width=\textwidth]{B20-10}
+\end{figure}
+
+\begin{table}[] 
+\centering 
+\caption{Aproksymacja za pomocą automatu o 12 stanach}  
+\begin{tabular}{| c | c | c | c |} 
+\hline \multicolumn{3}{| c |}{ Zbiór treningowy }  & Zbiór testowy \\
+\hline Błąd ,,krótkich'' słów [\%] & Błąd ,,długich słów'' [\%] & Błąd łączny [\%] & Błąd zbioru testowego [\%] \\ [0.5ex]  
+\hline 13,49 & 13,80 & 13,65 & 13,87 \\ 
+\hline 13,49 & 13,63 & 13,56 & 13,57 \\ 
+\hline 13,00 & 13,09 & 13,04 & 13,09 \\ 
+\hline 13,11 & 13,33 & 13,22 & 13,29 \\ 
+\hline 13,40 & 13,69 & 13,54 & 13,66 \\ 
+\hline 
+\end{tabular} 
+\end{table} 
+
+\begin{figure}[]
+\caption{Aproksymacja za pomocą automatu o 12 stanach}%
+\includegraphics[width=\textwidth]{B20-12}
+\end{figure}
+
+%\FloatBarrier
+\newpage
+\textbf{Aproksymacja automatów 30 stanowych}
+
+\begin{table}[] 
+\centering 
+\caption{Aproksymacja za pomocą automatu o 4 stanach}  
+\begin{tabular}{| c | c | c | c |} 
+\hline \multicolumn{3}{| c |}{ Zbiór treningowy }  & Zbiór testowy \\
+\hline Błąd ,,krótkich'' słów [\%] & Błąd ,,długich słów'' [\%] & Błąd łączny [\%] & Błąd zbioru testowego [\%] \\ [0.5ex]  
+\hline 26,37 & 26,54 & 26,50 & 26,77 \\ 
+\hline 26,28 & 26,32 & 26,30 & 26,31 \\ 
+\hline 26,32 & 26,61 & 26,46 & 26,72 \\ 
+\hline 26,30 & 26,39 & 26,35 & 26,55 \\ 
+\hline 26,41 & 26,40 & 26,40 & 26,49 \\ 
+\hline 
+\end{tabular} 
+\end{table} 
+
+\begin{figure}[]
+\caption{Aproksymacja za pomocą automatu o 4 stanach}%
+\includegraphics[width=\textwidth]{B30-4}
+\end{figure}
+
+\begin{table}[] 
+\centering 
+\caption{Aproksymacja za pomocą automatu o 6 stanach}  
+\begin{tabular}{| c | c | c | c |} 
+\hline \multicolumn{3}{| c |}{ Zbiór treningowy }  & Zbiór testowy \\
+\hline Błąd ,,krótkich'' słów [\%] & Błąd ,,długich słów'' [\%] & Błąd łączny [\%] & Błąd zbioru testowego [\%] \\ [0.5ex]    
+\hline 19,01 & 19,34 & 19,17 & 19,37 \\ 
+\hline 19,55 & 19,57 & 19,56 & 19,49 \\ 
+\hline 19,28 & 19,48 & 19,38 & 19,56 \\ 
+\hline 18,89 & 19,03 & 18,96 & 19,14 \\ 
+\hline 19,18 & 19,24 & 19,21 & 19,34 \\ 
+\hline 
+\end{tabular} 
+\end{table} 
+
+\begin{figure}[]
+\caption{Aproksymacja za pomocą automatu o 6 stanach}%
+\includegraphics[width=\textwidth]{B30-6}
+\end{figure}
+
+\clearpage
+
+\begin{table}[] 
+\centering 
+\caption{Aproksymacja za pomocą automatu o 8 stanach} 
+\begin{tabular}{| c | c | c | c | } 
+\hline \multicolumn{3}{| c |}{ Zbiór treningowy }  & Zbiór testowy \\
+\hline Błąd ,,krótkich'' słów [\%] & Błąd ,,długich słów'' [\%] & Błąd łączny [\%] & Błąd zbioru testowego [\%] \\ [0.5ex]   
+\hline 15,61 & 15,69 & 15,65 & 15,66  \\ 
+\hline 15,75 & 15,50 & 15,63 & 15,43  \\ 
+\hline 15,43 & 15,70 & 15,56 & 15,71  \\ 
+\hline 15,84 & 15,97 & 15,91 & 15,95  \\ 
+\hline 15,44 & 15,84 & 15,64 & 15,83  \\ 
+\hline 
+\end{tabular} 
+\end{table}
+
+\begin{figure}[]
+\caption{Aproksymacja za pomocą automatu o 8 stanach}%
+\includegraphics[width=\textwidth]{B30-8}
+\end{figure}
+
+\begin{table}[] 
+\centering 
+\caption{Aproksymacja za pomocą automatu o 10 stanach}  
+\begin{tabular}{| c | c | c | c |} 
+\hline \multicolumn{3}{| c |}{ Zbiór treningowy }  & Zbiór testowy \\
+\hline Błąd ,,krótkich'' słów [\%] & Błąd ,,długich słów'' [\%] & Błąd łączny [\%] & Błąd zbioru testowego [\%] \\ [0.5ex]  
+\hline 13,26 & 13,41 & 13,33 & 13,56 \\ 
+\hline 13,43 & 13,35 & 13,39 & 13,35 \\ 
+\hline 13,24 & 13,39 & 13,32 & 13,47 \\ 
+\hline 13,25 & 13,20 & 13,22 & 13,35 \\ 
+\hline 13,21 & 13,34 & 13,28 & 13,37 \\ 
+\hline 
+\end{tabular} 
+\end{table} 
+
+\begin{figure}[]
+\caption{Aproksymacja za pomocą automatu o 10 stanach}%
+\includegraphics[width=\textwidth]{B30-10}
+\end{figure}
+
+\begin{table}[] 
+\centering 
+\caption{Aproksymacja za pomocą automatu o 12 stanach}  
+\begin{tabular}{| c | c | c | c |} 
+\hline \multicolumn{3}{| c |}{ Zbiór treningowy }  & Zbiór testowy \\
+\hline Błąd ,,krótkich'' słów [\%] & Błąd ,,długich słów'' [\%] & Błąd łączny [\%] & Błąd zbioru testowego [\%] \\ [0.5ex]   
+\hline 11,71 & 11,98 & 11,85 & 11,90 \\ 
+\hline 11,95 & 11,65 & 11,80 & 11,70 \\ 
+\hline 12,05 & 12,07 & 12,06 & 12,00 \\ 
+\hline 11,75 & 12,08 & 11,92 & 12,05 \\ 
+\hline 12,21 & 12,21 & 12,21 & 12,31 \\ 
+\hline 
+\end{tabular} 
+\end{table} 
+
+\begin{figure}[]
+\caption{Aproksymacja za pomocą automatu o 12 stanach}%
+\includegraphics[width=\textwidth]{B30-12}
+\end{figure}
+
+\newpage
+
+\textbf{Aproksymacja automatów 40 stanowych}
+
+\begin{table}[] 
+\centering 
+\caption{Aproksymacja za pomocą automatu o 4 stanach}  
+\begin{tabular}{| c | c | c | c |} 
+\hline \multicolumn{3}{| c |}{ Zbiór treningowy }  & Zbiór testowy \\
+\hline Błąd ,,krótkich'' słów [\%] & Błąd ,,długich słów'' [\%] & Błąd łączny [\%] & Błąd zbioru testowego [\%] \\ [0.5ex]  
+\hline 26,52 & 26,46 & 26,49 & 26,58 \\ 
+\hline 26,11 & 26,17 & 26,14 & 26,05 \\ 
+\hline 26,66 & 26,85 & 26,75 & 26,74 \\ 
+\hline 26,45 & 26,42 & 26,43 & 26,26 \\ 
+\hline 26,58 & 26,73 & 26,65 & 26,74 \\ 
+\hline 
+\end{tabular} 
+\end{table} 
+
+\begin{figure}[]
+\caption{Aproksymacja za pomocą automatu o 4 stanach}%
+\includegraphics[width=\textwidth]{B40-4}
+\end{figure}
+
+\begin{table}[] 
+\centering 
+\caption{Aproksymacja za pomocą automatu o 6 stanach}  
+\begin{tabular}{| c | c | c | c |} 
+\hline \multicolumn{3}{| c |}{ Zbiór treningowy }  & Zbiór testowy \\
+\hline Błąd ,,krótkich'' słów [\%] & Błąd ,,długich słów'' [\%] & Błąd łączny [\%] & Błąd zbioru testowego [\%] \\ [0.5ex]    
+\hline 18,53 & 18,65 & 18,59 & 18,65 \\ 
+\hline 18,67 & 18,39 & 18,53 & 18,47 \\ 
+\hline 18,66 & 18,85 & 18,75 & 18,87 \\ 
+\hline 18,61 & 18,73 & 18,67 & 18,81 \\ 
+\hline 18,59 & 18,80 & 18,69 & 18,82 \\ 
+\hline 
+\end{tabular} 
+\end{table} 
+
+\begin{figure}[]
+\caption{Aproksymacja za pomocą automatu o 6 stanach}%
+\includegraphics[width=\textwidth]{B40-6}
+\end{figure}
+
+\begin{table}[] 
+\centering 
+\caption{Aproksymacja za pomocą automatu o 8 stanach} 
+\begin{tabular}{| c | c | c | c | } 
+\hline \multicolumn{3}{| c |}{ Zbiór treningowy }  & Zbiór testowy \\
+\hline Błąd ,,krótkich'' słów [\%] & Błąd ,,długich słów'' [\%] & Błąd łączny [\%] & Błąd zbioru testowego [\%] \\ [0.5ex]  
+\hline 14,76 & 14,88 & 14,82 & 14,96  \\ 
+\hline 14,56 & 14,71 & 14,63 & 14,59  \\ 
+\hline 14,68 & 14,67 & 14,67 & 14,78  \\ 
+\hline 15,22 & 15,05 & 15,13 & 18,18  \\ 
+\hline 14,80 & 14,84 & 14,82 & 18,86  \\ 
+\hline 
+\end{tabular} 
+\end{table}
+
+\begin{figure}[]
+\caption{Aproksymacja za pomocą automatu o 8 stanach}%
+\includegraphics[width=\textwidth]{B40-8}
+\end{figure}
+
+\begin{table}[] 
+\centering 
+\caption{Aproksymacja za pomocą automatu o 10 stanach}  
+\begin{tabular}{| c | c | c | c |} 
+\hline \multicolumn{3}{| c |}{ Zbiór treningowy }  & Zbiór testowy \\
+\hline Błąd ,,krótkich'' słów [\%] & Błąd ,,długich słów'' [\%] & Błąd łączny [\%] & Błąd zbioru testowego [\%] \\ [0.5ex]    
+\hline 12,34 & 12,47 & 12,40 & 12,61 \\ 
+\hline 12,79 & 12,88 & 12,84 & 12,97 \\ 
+\hline 12,48 & 12,48 & 12,48 & 12,53 \\ 
+\hline 12,83 & 12,68 & 12,70 & 12,69 \\ 
+\hline 12,52 & 12,71 & 12,62 & 12,70 \\ 
+\hline 
+\end{tabular} 
+\end{table} 
+
+\begin{figure}[]
+\caption{Aproksymacja za pomocą automatu o 10 stanach}%
+\includegraphics[width=\textwidth]{B40-10}
+\end{figure}
+
+
+\begin{table}[] 
+\centering 
+\caption{Aproksymacja za pomocą automatu o 12 stanach}  
+\begin{tabular}{| c | c | c | c |} 
+\hline \multicolumn{3}{| c |}{ Zbiór treningowy }  & Zbiór testowy \\
+\hline Błąd ,,krótkich'' słów [\%] & Błąd ,,długich słów'' [\%] & Błąd łączny [\%] & Błąd zbioru testowego [\%] \\ [0.5ex]  
+\hline 11,13 & 11,43 & 11,28 & 11,28 \\ 
+\hline 11,10 & 10,98 & 11,04 & 11,02 \\ 
+\hline 10,85 & 10,88 & 10,87 & 10,98 \\ 
+\hline 11,00 & 11,00 & 11,00 & 11,11 \\ 
+\hline 11,32 & 11,26 & 11,29 & 11,27 \\ 
+\hline 
+\end{tabular} 
+\end{table} 
+
+\begin{figure}[]
+\caption{Aproksymacja za pomocą automatu o 12 stanach}%
+\includegraphics[width=\textwidth]{B40-12}
+\end{figure}
 
 \end{document}
