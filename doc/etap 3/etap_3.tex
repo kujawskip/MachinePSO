@@ -115,7 +115,7 @@ Analogicznie wygenerowany zostanie zbiór testowy, służący do mierzenia skute
 
 Wywołujemy algorytm PSO dla każdego całkowitego $i$ z przedziału $[2, MaxState]$ oraz ilości cząstek równej $P.N + LastBestCount$. Zmienna $i$ określa liczbę stanów jaką ma mieć automat wynikowy. Cząsteczka zawiera automat, który zapisany jest w postaci macierzy $M * Al$ liczb zmiennopozycyjnych (z zakresu $[0; MaxState - 1 + \epsilon]$). Funkcja $Fitness$ ma do niego dostęp i ma możliwość uruchomienia na nim obliczeń. W trakcie przeprowadzania obliczeń, wartości zmiennopozycyjne są zaokrąglane w dół do liczby całkowitej, na potrzeby przypisania ich do konkretnego stanu. 
 
-Następnie dla każdej pary słów w zbiorze treningowych par sprawdzane jest czy oba słowa kończą działanie automatu w tym samym stanie. Na podstawie wyników przetwarzania wstępnego sprawdzamy, czy wynik ten jest błędem. Zwracana jest liczba napotkanych błędów. 
+Następnie dla każdego słowa występującego w zbiorach testowych znajdowany jest stan końcowy obliczeń automatu po podaniu tego słowa. Następnie dla pary słów w zbiorze treningowych par sprawdzane jest czy oba słowa kończą działanie automatu w tym samym stanie. Na podstawie wyników przetwarzania wstępnego sprawdzamy, czy wynik ten jest błędem. Zwracana jest liczba napotkanych błędów. 
 
 W każdej iteracji prócz pierwszej do zbioru losowych cząstek dodawane są cząstki konstruowane na podstawie wyniku poprzedniej iteracji. Są to macierze z dodatkowym wierszem odpowiadającym nieosiągalnemu przez automat stanowi, wiersz ten wypełniany jest losowo, tak samo początkowy wektor prędkości cząsteczki również jest losowy.
 
@@ -126,50 +126,6 @@ Zmianie uległy również warunki zakończenia działania instancji PSO. PSO zwr
 \newpage
 
 \section{Dokumentacja techniczna rozwiązania}
-
-%
-%\subsection{Struktury danych}
-%\label{sec:data_struct}
-%Rozdział ten opisuje najważniejsze struktury danych potrzebne do rozwiązania zadania. Przedstawione są kluczowe atrybuty klas, z pominięciem atrybutów prywatnych i tymczasowych.
-
-%\subsection*{Automaton}
-%Automat reprezentujemy jako klasę posiadającą następujące atrybuty:
-%\begin{itemize}
-%\item $LettersCount$ -- liczba liter w alfabecie, litery numerujemy od 0 do $LettersCount$ - 1,
-%\item $StatesCount$ -- liczba stanów automatu, stany numerujemy od 0 do $StatesCount$ - 1,
-%\item $CurrentState$ -- indeks stanu, w którym aktualnie znajduje się automat,
-%\item $Transistions$ -- tablica opisująca funkcję przejścia; jest to tablica dwuwymiarowa, rozmiaru ($StatesCount$\ *\ $LettersCount$) o wartosciach $[0\ ..\ StatesCount - 1$].
-%\end{itemize}
-%Przy tak zdefiniowanej strukturze danych, obliczenie automatu dla litery $Letter$ wyraża się następująco:
-%\[
-%  CurrentState = Transistions[CurrentState][Letter]
-%\]
-%
-%\subsection*{Particle}
-%\begin{itemize}
-%\item $Position$ -- aktualny stan cząsteczki, na podstawie którego zbudować można funkcje przejścia dla automatu; tablica rozmiaru  ($StatesCount$\ *\ $LettersCount$) o wartościach typu zmiennopozycyjnego z zakresu $[0.0\ ..\ StatesCount - 1$],
-%\item $Error$ -- wartość błędu dla aktualnej pozycji $Position$,
-%\item $BestError$ -- najlepszy ,,lokalny'' błąd uzyskany dotychczas przez te cząsteczkę,
-%\item $BestPosition$ -- najlepszy ,,lokalny'' stan cząsteczki, tablica zdefiniowana tak samo jak $Position$,
-%\item $Velocity$ -- aktualna prędkość cząsteczki; tablica rozmiaru ($StatesCount$\ *\ $LettersCount$) o wartościach typu zmiennopozycyjnego z zakresu $[-(StatesCount - 1)\ ..\ StatesCount - 1$].
-%\end{itemize}
-%
-%\subsection*{PSO}
-%Klasa realizująca optymalizację za pomocą algorytmu PSO. Atrybuty:
-%\begin{itemize}
-%\item $ParticleCount$ -- liczba cząsteczek w roju,
-%\item $Swarm$ -- tablica rozmiaru $ParticleCount$ z wartościami typu $Particle$,
-%\item $BestGlobalPosition$ -- najlepszy ,,globalny'' stan spośród wszystkich cząsteczek; tablica  zdefiniowana tak samo jak $Particle.Position$,
-%\item $BestGlobalError$ -- najlepszy (najniższy) ,,globalny'' błąd spośród wszystkich cząsteczek.
-%\end{itemize}
-%Dodatkowe parametry określające charakterystykę działania optymalizacji (np. parametr $maxEpochs$) przekazywane są bezpośrednio do funkcji uruchamiającej obliczenia PSO.
-%
-%\subsection*{DataSet}
-%\begin{itemize}
-%\item $Word1$ -- pierwsze słowo (lista liter),
-%\item $Word2$ -- drugie słowo (lista liter),
-%\item $AreRelated$ -- wartość boolowska określająca, czy $Word1$ oraz $Word2$ są ze sobą w relacji.
-%\end{itemize}
 
 \subsection{Szczegóły implementacyjne}
 
